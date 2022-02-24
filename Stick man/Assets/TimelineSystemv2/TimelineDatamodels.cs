@@ -2,16 +2,6 @@
 using System;
 using System.Collections.Generic;
 
-public enum ATTACK_ACTION
-{
-    LIGHT, MEDIUM, HARD
-}
-
-public static class TurnBasedConstants
-{
-
-}
-
 public class OverlappingPercentage
 {
     public float Percent;

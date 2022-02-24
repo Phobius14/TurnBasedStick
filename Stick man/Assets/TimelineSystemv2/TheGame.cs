@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,7 +11,6 @@ public class TheGame : GameBase
     public List<Unit> Team1;
     public bool Team2AI;
     public List<Unit> Team2;
-    private int _currentTurn = 0;
     public override void PreStartGame()
     {
         initTeam(Team1, 1, Team1AI);

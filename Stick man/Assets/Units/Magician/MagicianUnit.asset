@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b37dfd40f1249924e95b3bdb6aa50cf6, type: 3}
   m_Name: MagicianUnit
   m_EditorClassIdentifier: 
-  TimelineIndicator: {fileID: 1407662242527612373, guid: 0d9992fb7b1c20741a89fa75bc2a3d5b, type: 3}
-  AttackIndicator: {fileID: 0}
-  GhostIndicator: {fileID: 2843248341744620001, guid: 310f4ccd4b889264abea2f2b3dd6787a, type: 3}
+  TimelineIndicator: {fileID: 5105750632128405281, guid: 0d9992fb7b1c20741a89fa75bc2a3d5b, type: 3}
+  AttackIndicator: {fileID: 2881588613486705261, guid: d018cd05dd3aec64799f930f1d0fc9fb, type: 3}
+  GhostIndicator: {fileID: 2127099713921487415, guid: 6dce29727b81daa4ca3c62ffc7504e4f, type: 3}
