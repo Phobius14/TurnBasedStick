@@ -5,15 +5,16 @@ using UnityEngine;
 public class Unit : MonoBehaviour
 {
     public string Name;
-    public int Initiative;
+    public int Haste;
     public int Health;
     public int Damage;
     internal int Team;
     internal bool AI;
     internal int ID;
-    private CoreCallback _afterAttack;
+    public UnitSettings UnitSettings;
+    protected CoreCallback _afterAttack;
 
-    internal void Attack1(CoreCallback afterAttack)
+    public virtual void Attack1(CoreCallback afterAttack)
     {
         _afterAttack = afterAttack;
 

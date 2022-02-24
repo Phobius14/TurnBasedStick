@@ -6,21 +6,21 @@ using UnityEngine;
 public class UnitPlayer : MonoBehaviour, IUnitControlable
 {
     private Unit _unit;
-    private CoreCallback _afterDecisionTurnCallback;
+    private CoreCallback _duringDecisionCallback;
     private CoreCallback _endTurnCallback;
 
-    public void DoTurn(CoreCallback afterDecisionTurnCallback, CoreCallback endTurnCallback)
+    public void DoTurn(CoreCallback duringDecisionCallback, CoreCallback endTurnCallback)
     {
-        _afterDecisionTurnCallback = afterDecisionTurnCallback;
+        _duringDecisionCallback = duringDecisionCallback;
         _endTurnCallback = endTurnCallback;
         if (_unit == null)
         {
             _unit = gameObject.GetComponent<Unit>();
         }
 
-        TurnBasedGame._.TurnGameView.ActivateActions((int actionId) =>
+        TurnGameView._.ActivateActions((int actionId) =>
         {
-            _afterDecisionTurnCallback();
+            _duringDecisionCallback();
 
             ATTACK_ACTION action = (ATTACK_ACTION)actionId;
             switch (action)

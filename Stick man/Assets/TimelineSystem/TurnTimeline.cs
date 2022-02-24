@@ -177,11 +177,11 @@ public class TurnTimeline : MonoBehaviour
         int t2Max = 0;
         if (TurnBasedGame._.Team1 != null)
         {
-            t1Max = TurnBasedGame._.Team1.Max(u => u.Initiative);
+            t1Max = TurnBasedGame._.Team1.Max(u => u.Haste);
         }
         if (TurnBasedGame._.Team2 != null)
         {
-            t2Max = TurnBasedGame._.Team2.Max(u => u.Initiative);
+            t2Max = TurnBasedGame._.Team2.Max(u => u.Haste);
         }
         return t1Max > t2Max ? t1Max : t2Max;
     }
@@ -202,7 +202,7 @@ public class TurnTimeline : MonoBehaviour
 
         unitCircleRt.GetComponent<Image>().color = color;
 
-        int unitTurn = unit.Initiative * turn;
+        int unitTurn = unit.Haste * turn;
 
         go.name = renameCircle(unitTurn, unit);
 

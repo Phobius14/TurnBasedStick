@@ -46,5 +46,4 @@ MonoBehaviour:
   ConsoleLog: 0
   CheckForUpdates: 0
   Game: {fileID: 0}
-  CoreCamera: {fileID: 0}
   CoreExtension: 

@@ -116,7 +116,7 @@ public class TurnBasedGame : GameBase, IGame
             return false;
         });
 
-        int tIndex = lastIndex + TimelineUnits[0].Unit.Initiative;
+        int tIndex = lastIndex + TimelineUnits[0].Unit.Haste;
         Debug.Log("lastIndex: " + lastIndex);
         Debug.Log("tIndex: " + tIndex);
         // Debug.Log("TimelineUnits.Count: " + TimelineUnits.Count);
@@ -142,7 +142,7 @@ public class TurnBasedGame : GameBase, IGame
 
         MoveCircleAfterTurn(tIndex);
 
-        __debug.DebugList<TimelineUnit>(TurnBasedGame._.TimelineUnits, "timelineUnits: ");
+        __debug.DList<TimelineUnit>(TurnBasedGame._.TimelineUnits, "timelineUnits: ");
     }
 
     private void MoveCircleAfterTurn(int tIndex)

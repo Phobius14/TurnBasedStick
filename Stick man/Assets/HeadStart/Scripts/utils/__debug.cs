@@ -41,7 +41,7 @@ namespace Assets.Scripts.utils
 
         public delegate string DebugFunc<T>(T obj);
 
-        public static void DebugList<T>(List<T> array, string name = null, DebugFunc<T> debugFunc = null)
+        public static void DList<T>(List<T> array, string name = null, DebugFunc<T> debugFunc = null)
         {
             var debugString = GetDebugList(array, name, debugFunc);
             Debug.Log(debugString);
@@ -75,15 +75,15 @@ namespace Assets.Scripts.utils
             return name + " (" + debug + ")[" + array.Count + "]";
         }
 
-        public static string DebugDict<T>(Dictionary<T, T> array, string name = null)
+        public static void DDictionary<T>(Dictionary<int, T> array, string name = null)
         {
             string debug = string.Empty;
             foreach (var bId in array)
             {
-                debug += "[" + bId.Key.ToString() + "] " + bId.Value.ToString();
+                debug += "\n(" + bId.Key.ToString() + ") " + bId.Value.ToString();
             }
-            return string.IsNullOrEmpty(name) ? debug
-                : name + " [" + debug + "](" + array.Count + ")";
+            Debug.Log(string.IsNullOrEmpty(name) ? debug
+                : name + " [" + debug + "](" + array.Count + ")");
         }
 
         public static void AddIfNone(int value, ref List<int> array, string debugAdd = null)

@@ -5,5 +5,5 @@ using UnityEngine;
 
 public interface IUnitControlable
 {
-    void DoTurn(CoreCallback afterDecisionTurnCallback, CoreCallback endTurnCallback);
+    void DoTurn(CoreCallback duringDecisionCallback, CoreCallback endTurnCallback);
 }
