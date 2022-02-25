@@ -17,12 +17,25 @@ public class UnitAi : MonoBehaviour, IUnitControlable
             _unit = gameObject.GetComponent<Unit>();
         }
 
-        // TODO: make AI make a decision
-        _duringDecisionCallback((int)ATTACK_ACTION.LIGHT);
+        int action = UnityEngine.Random.Range(0, 3);
 
-        _unit.Attack1((int actionId) =>
+        // TODO: make AI make a decision
+        // _duringDecisionCallback((int)ATTACK_ACTION.LIGHT);
+
+        __.Time.RxWait(() =>
         {
-            _endTurnCallback(actionId);
-        });
+            _duringDecisionCallback(action);
+
+            __.Time.RxWait(() =>
+            {
+                _unit.DelayedAttack(action + 1, (int actionId) =>
+                {
+                    _endTurnCallback(actionId);
+                });
+            }, Timeline.MOVE_INDICATORS_TIME);
+
+        }, Timeline.MOVE_INDICATORS_TIME);
+
+
     }
 }

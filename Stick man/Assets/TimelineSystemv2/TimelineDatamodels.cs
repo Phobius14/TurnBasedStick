@@ -24,7 +24,7 @@ public class OverlappingPercentage
 {
     public float Percent;
     public float Min;
-    public List<UnitIndicator> Duplicates;
+    public List<ITimelineIndicator> Duplicates;
     public float Max;
 
     public override string ToString()

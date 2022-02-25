@@ -33,14 +33,19 @@ public static class TimelineUtils
         _level3Pos = level3.anchoredPosition;
     }
 
-    internal static UnitIndicator SolveClosestIndicator(
+    internal static ITimelineIndicator SolveClosestIndicator(
         List<UnitIndicator> tIndicators,
-        KeyValuePair<int, float> closest, KeyValuePair<int, float> farthest
+        KeyValuePair<int, float> closest, KeyValuePair<int, float> farthest,
+        ref bool needToMoveAttackIndicator
     )
     {
+        Debug.Log("closest: " + closest);
+        Debug.Log("farthest: " + farthest);
+
         var isClosestGhost = closest.Key > Timeline.GHOSTINDICATOR_ID_THRESHOLD
             && closest.Key < Timeline.ATTACKINDICATOR_ID_THRESHOLD;
         var isClosestAttack = closest.Key > Timeline.ATTACKINDICATOR_ID_THRESHOLD;
+        Debug.Log("isClosestAttack: " + isClosestAttack);
 
         UnitIndicator closestIndicator = (isClosestGhost
             ? tIndicators.Find(ti => ti.GhostID == closest.Key)
@@ -53,6 +58,7 @@ public static class TimelineUtils
         var isFarthestGhost = farthest.Key > Timeline.GHOSTINDICATOR_ID_THRESHOLD
             && farthest.Key < Timeline.ATTACKINDICATOR_ID_THRESHOLD;
         var isFarthestAttack = farthest.Key > Timeline.ATTACKINDICATOR_ID_THRESHOLD;
+        Debug.Log("isFarthestAttack: " + isFarthestAttack);
 
         var farthestIndicator = tIndicators.Find(ti =>
         {
@@ -61,10 +67,26 @@ public static class TimelineUtils
             return ti.Unit.ID == farthest.Key;
         });
 
-        var indicator =
-            closestIndicator.Unit.Haste >= farthestIndicator.Unit.Haste
-            ? closestIndicator
-            : farthestIndicator;
+        Debug.Log("closestIndicator: " + closestIndicator);
+        Debug.Log("farthestIndicator: " + farthestIndicator);
+
+        ITimelineIndicator indicator;
+        if (closestIndicator.Unit.Haste >= farthestIndicator.Unit.Haste)
+        {
+            if (isClosestAttack)
+            {
+                needToMoveAttackIndicator = true;
+            }
+            indicator = closestIndicator;
+        }
+        else
+        {
+            if (isFarthestAttack)
+            {
+                needToMoveAttackIndicator = true;
+            }
+            indicator = farthestIndicator;
+        }
 
         return indicator;
     }

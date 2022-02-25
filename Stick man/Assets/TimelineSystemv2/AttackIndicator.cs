@@ -44,7 +44,8 @@ public class AttackIndicator : MonoBehaviour, ITimelineIndicator
     {
         return String.Format(@"
         ID: {0},
-        Unit.ID: {1}
-        ", ID, Unit.ID);
+        Unit.ID: {1},
+        INDICATOR_TYPE: {2}
+        ", ID, Unit.ID, Type);
     }
 }

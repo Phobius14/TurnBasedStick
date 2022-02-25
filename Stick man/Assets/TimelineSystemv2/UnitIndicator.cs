@@ -39,19 +39,20 @@ public class UnitIndicator : MonoBehaviour, ITimelineIndicator
 
     public override string ToString()
     {
-        return "\n" + String.Format(@"
-        UnitId: {0},
+        return "\n" + String.Format(@"UnitId: {0},
         TurnWidth: {1},
         Level: {2},
         PercentTurn: {3}
         GhostID: {4},
-        AttackID: {5}",
+        AttackID: {5},
+        INDICATOR_TYPE: {6}",
         Unit.ID,
         TurnWidth,
         Level,
         PercentTurn,
         GhostID,
-        AttackID
+        AttackID,
+        Type
         );
     }
 }

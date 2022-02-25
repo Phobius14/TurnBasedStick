@@ -30,7 +30,7 @@ public class Timeline : MonoBehaviour
     // 
     public static readonly int GHOSTINDICATOR_ID_THRESHOLD = 1000;
     public static readonly int ATTACKINDICATOR_ID_THRESHOLD = 2000;
-    private readonly float MOVE_INDICATORS_TIME = 0.3f;
+    public static readonly float MOVE_INDICATORS_TIME = 0.3f;
 
     public void Init(List<Unit> team1, List<Unit> team2)
     {
@@ -429,12 +429,26 @@ public class Timeline : MonoBehaviour
                 //     " => " + closest.Value + " > " + (farthest.Value - offset)
                 // );
 
+                bool needToMoveAttackIndicator = false;
+
                 var indicator = TimelineUtils.SolveClosestIndicator(
                     UnitIndicators,
-                    closest, farthest
+                    closest, farthest,
+                    ref needToMoveAttackIndicator
                 );
 
-                var currentPercentageOfIndicator = allRectsXP[indicator.Unit.ID];
+                float currentPercentageOfIndicator = 0;
+                Debug.Log("indicator.Type: " + indicator.Type + " GO: " + indicator.Go.name);
+
+                if (needToMoveAttackIndicator)
+                {
+                    currentPercentageOfIndicator = allRectsXP[indicator.AttackID];
+                }
+                else
+                {
+                    currentPercentageOfIndicator = allRectsXP[indicator.Unit.ID];
+                }
+
                 var pIndex = allPercentages.FindIndex(ap => ap == currentPercentageOfIndicator);
                 float min = (pIndex == 0
                     ? allPercentages[pIndex]
@@ -456,7 +470,7 @@ public class Timeline : MonoBehaviour
                         Min = min,
                         Max = max,
                         Percent = currentPercentageOfIndicator,
-                        Duplicates = new List<UnitIndicator> { indicator }
+                        Duplicates = new List<ITimelineIndicator> { indicator }
                     });
                 }
             }
@@ -568,7 +582,9 @@ public class Timeline : MonoBehaviour
 
         for (int i = 0; i < sorted.Count; i++)
         {
-            var duplicates = sorted.FindAll(s => s.PercentTurn == sorted[i].PercentTurn);
+            List<ITimelineIndicator> duplicates = sorted
+                .FindAll(s => s.PercentTurn == sorted[i].PercentTurn)
+                .Select(s => s as ITimelineIndicator).ToList();
 
             if (duplicates.Count <= 1) { continue; }
 
