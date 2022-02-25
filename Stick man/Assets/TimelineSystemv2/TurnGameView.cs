@@ -11,6 +11,7 @@ public class TurnGameView : MonoBehaviour
     public Button LightAttackButton;
     public Button MediumAttackButton;
     public Button HardAttackButton;
+    private CoreIdCallback _onHoverAction;
     private CoreIdCallback _onPickedAction;
 
     public void Init()
@@ -18,8 +19,9 @@ public class TurnGameView : MonoBehaviour
         activateButtons(false);
     }
 
-    public void ActivateActions(CoreIdCallback onPickedAction)
+    public void ActivateActions(CoreIdCallback onHoverAction, CoreIdCallback onPickedAction)
     {
+        _onHoverAction = onHoverAction;
         _onPickedAction = onPickedAction;
 
         activateButtons();
@@ -41,6 +43,11 @@ public class TurnGameView : MonoBehaviour
     {
         _onPickedAction((int)ATTACK_ACTION.HARD);
         activateButtons(false);
+    }
+
+    public void HoverAttack(int attackType)
+    {
+        _onHoverAction(attackType);
     }
 
     private void activateButtons(bool active = true)

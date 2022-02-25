@@ -5,10 +5,10 @@ using UnityEngine;
 public class UnitAi : MonoBehaviour, IUnitControlable
 {
     private Unit _unit;
-    private CoreCallback _duringDecisionCallback;
-    private CoreCallback _endTurnCallback;
+    private CoreIdCallback _duringDecisionCallback;
+    private CoreIdCallback _endTurnCallback;
 
-    public void DoTurn(CoreCallback duringDecisionCallback, CoreCallback endTurnCallback)
+    public void DoTurn(CoreIdCallback duringDecisionCallback, CoreIdCallback endTurnCallback)
     {
         _duringDecisionCallback = duringDecisionCallback;
         _endTurnCallback = endTurnCallback;
@@ -18,11 +18,11 @@ public class UnitAi : MonoBehaviour, IUnitControlable
         }
 
         // TODO: make AI make a decision
-        _duringDecisionCallback();
+        _duringDecisionCallback(1);
 
-        _unit.Attack1(() =>
+        _unit.Attack1((int actionId) =>
         {
-            _endTurnCallback();
+            _endTurnCallback(actionId);
         });
     }
 }

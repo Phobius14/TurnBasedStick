@@ -17,7 +17,7 @@ public class TestEnemy : Unit
         AttackText.gameObject.SetActive(false);
     }
 
-    public override void Attack1(CoreCallback afterAttack)
+    public override void Attack1(CoreIdCallback afterAttack)
     {
         _afterAttack = afterAttack;
 
@@ -45,7 +45,7 @@ public class TestEnemy : Unit
             {
                 AttackText.gameObject.SetActive(false);
 
-                _afterAttack();
+                _afterAttack(1);
             });
         });
     }

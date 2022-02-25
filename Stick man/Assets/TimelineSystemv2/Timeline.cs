@@ -15,6 +15,7 @@ public class Timeline : MonoBehaviour
     public RectTransform Level3;
     public List<TimelineIndicator> TimelineIndicators;
     public List<GhostIndicator> GhostIndicators;
+    public List<AttackIndicator> AttackIndicators;
     public static float LevelHeight;
     private List<Unit> _allUnits;
     private GameObject _valueTweenGo;
@@ -24,6 +25,7 @@ public class Timeline : MonoBehaviour
     private float _distanceSoFar;
     private TimelineIndicator _currentTimelineIndicator;
     private int? _pushOneTwId;
+    private int? _moveAttackTwId;
     private CoreCallback _endingTurnCallback;
     // 
     private readonly float MOVE_INDICATORS_TIME = 0.3f;
@@ -74,6 +76,12 @@ public class Timeline : MonoBehaviour
                 indicator.TurnWidth * 2,
                 getLevelYPos(indicator.Level)
             );
+
+            var aiIndex = AttackIndicators.FindIndex(gi => gi.UnitID == indicator.Unit.ID);
+            var aiRt = AttackIndicators[giIndex].transform as RectTransform;
+            aiRt.anchoredPosition = new Vector2(0, getLevelYPos(1));
+
+            AttackIndicators[giIndex].gameObject.SetActive(false);
         }
 
         _valueTweenGo = new GameObject();
@@ -167,6 +175,88 @@ public class Timeline : MonoBehaviour
         }
     }
 
+    internal void ShowDelayedAttack(ATTACK_ACTION action)
+    {
+        var attackIndicator = AttackIndicators
+                    .Find(ai => ai.ID == _currentTimelineIndicator.AttackID);
+
+        Vector2 fromPos = attackIndicator.Rt.anchoredPosition;
+        Vector2 toPos = Vector2.zero;
+        switch (action)
+        {
+            case ATTACK_ACTION.HARD:
+
+                toPos = new Vector2(
+                    _currentTimelineIndicator.TurnWidth / 1.33f,
+                    getLevelYPos(3)
+                );
+                attackIndicator.gameObject.SetActive(true);
+                _currentTimelineIndicator.gameObject.SetActive(false);
+
+                break;
+            case ATTACK_ACTION.MEDIUM:
+
+                toPos = new Vector2(
+                    _currentTimelineIndicator.TurnWidth / 3,
+                    getLevelYPos(2)
+                );
+                attackIndicator.gameObject.SetActive(true);
+                _currentTimelineIndicator.gameObject.SetActive(false);
+
+                break;
+            case ATTACK_ACTION.LIGHT:
+            default:
+
+                toPos = new Vector2(0, getLevelYPos(1));
+
+                break;
+        }
+
+        if (_moveAttackTwId.HasValue)
+        {
+            LeanTween.cancel(_moveAttackTwId.Value);
+            _moveAttackTwId = null;
+        }
+
+        Vector2 distanceSoFar = Vector2.zero;
+
+        _moveAttackTwId = LeanTween.value(
+            _valueTweenGo,
+            fromPos,
+            toPos,
+            MOVE_INDICATORS_TIME
+        ).id;
+        LeanTween.descr(_moveAttackTwId.Value).setEase(LeanTweenType.easeOutSine);
+        LeanTween.descr(_moveAttackTwId.Value)
+            .setOnUpdate((Vector2 newPos) =>
+            {
+                var diff = newPos - distanceSoFar;
+                Debug.Log("diff: " + diff);
+                distanceSoFar = newPos;
+
+                attackIndicator.Rt.anchoredPosition
+                    = new Vector2(
+                        newPos.x,
+                        newPos.y
+                    );
+                var giRt = GhostIndicators.Find(gi => gi.UnitID == _currentTimelineIndicator.Unit.ID).Rt;
+                giRt.anchoredPosition = new Vector2(
+                    newPos.x + _currentTimelineIndicator.TurnWidth,
+                    newPos.y
+                );
+            });
+
+        LeanTween.descr(_moveAttackTwId.Value)
+            .setOnComplete(() =>
+            {
+                if (action == ATTACK_ACTION.LIGHT)
+                {
+                    attackIndicator.gameObject.SetActive(false);
+                    _currentTimelineIndicator.gameObject.SetActive(true);
+                }
+            });
+    }
+
     public void MoveCurrentIndicatorToHisNextTurn(CoreCallback endingTurnCallback)
     {
         _endingTurnCallback = endingTurnCallback;
@@ -226,12 +316,12 @@ public class Timeline : MonoBehaviour
             unit.UnitSettings.TimelineIndicator,
             Vector2.zero, Quaternion.identity, MaskRt);
 
-        var unitIndicatorRt = (go.transform as RectTransform);
-        unitIndicatorRt.anchoredPosition = Vector2.zero;
-        unitIndicatorRt.sizeDelta = new Vector2(LevelHeight, LevelHeight);
+        var indicatorRt = (go.transform as RectTransform);
+        indicatorRt.anchoredPosition = Vector2.zero;
+        indicatorRt.sizeDelta = new Vector2(LevelHeight, LevelHeight);
 
-        var indicator = unitIndicatorRt.GetComponent<TimelineIndicator>();
-        indicator.Unit = unit;
+        var indicator = indicatorRt.GetComponent<TimelineIndicator>();
+        indicator.Init(unit);
         go.name = "(" + unit.ID + ")" + unit.Name;
 
         // Create Ghost Indicator
@@ -239,18 +329,34 @@ public class Timeline : MonoBehaviour
             unit.UnitSettings.GhostIndicator,
             Vector2.zero, Quaternion.identity, MaskRt);
 
-        unitIndicatorRt = (go.transform as RectTransform);
-        unitIndicatorRt.anchoredPosition = Vector2.zero;
-        unitIndicatorRt.sizeDelta = new Vector2(LevelHeight, LevelHeight);
+        indicatorRt = (go.transform as RectTransform);
+        indicatorRt.anchoredPosition = Vector2.zero;
+        indicatorRt.sizeDelta = new Vector2(LevelHeight, LevelHeight);
 
-        var ghostIndicator = unitIndicatorRt.GetComponent<GhostIndicator>();
-        ghostIndicator.ID = unit.ID + 1000;
+        var ghostIndicator = indicatorRt.GetComponent<GhostIndicator>();
+        ghostIndicator.Init(unit.ID);
         go.name = "(" + ghostIndicator.ID + ") GHOST" + unit.Name;
-        ghostIndicator.UnitID = unit.ID;
+
         indicator.GhostID = ghostIndicator.ID;
+
+        // Create Attack Indicator
+        go = Instantiate(
+            unit.UnitSettings.AttackIndicator,
+            Vector2.zero, Quaternion.identity, MaskRt);
+
+        indicatorRt = (go.transform as RectTransform);
+        indicatorRt.anchoredPosition = Vector2.zero;
+        indicatorRt.sizeDelta = new Vector2(LevelHeight, LevelHeight);
+
+        var attackIndicator = indicatorRt.GetComponent<AttackIndicator>();
+        attackIndicator.Init(unit.ID);
+        go.name = "(" + attackIndicator.ID + ") ATTACK" + unit.Name;
+
+        indicator.AttackID = attackIndicator.ID;
 
         TimelineIndicators.Add(indicator);
         GhostIndicators.Add(ghostIndicator);
+        AttackIndicators.Add(attackIndicator);
     }
 
     private bool checkIfIndicatorsOverlap()

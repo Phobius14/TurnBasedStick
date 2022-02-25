@@ -6,10 +6,10 @@ using UnityEngine;
 public class UnitPlayer : MonoBehaviour, IUnitControlable
 {
     private Unit _unit;
-    private CoreCallback _duringDecisionCallback;
-    private CoreCallback _endTurnCallback;
+    private CoreIdCallback _duringDecisionCallback;
+    private CoreIdCallback _endTurnCallback;
 
-    public void DoTurn(CoreCallback duringDecisionCallback, CoreCallback endTurnCallback)
+    public void DoTurn(CoreIdCallback duringDecisionCallback, CoreIdCallback endTurnCallback)
     {
         _duringDecisionCallback = duringDecisionCallback;
         _endTurnCallback = endTurnCallback;
@@ -18,29 +18,30 @@ public class UnitPlayer : MonoBehaviour, IUnitControlable
             _unit = gameObject.GetComponent<Unit>();
         }
 
-        TurnGameView._.ActivateActions((int actionId) =>
-        {
-            _duringDecisionCallback();
-
-            ATTACK_ACTION action = (ATTACK_ACTION)actionId;
-            switch (action)
+        TurnGameView._.ActivateActions(
+            _duringDecisionCallback,
+            (int actionId) =>
             {
-                case ATTACK_ACTION.LIGHT:
-                    _unit.Attack1(afterAttacking);
-                    break;
-                case ATTACK_ACTION.MEDIUM:
-                    _unit.Attack2(afterAttacking);
-                    break;
-                case ATTACK_ACTION.HARD:
-                default:
-                    _unit.Attack3(afterAttacking);
-                    break;
+                ATTACK_ACTION action = (ATTACK_ACTION)actionId;
+                switch (action)
+                {
+                    case ATTACK_ACTION.LIGHT:
+                        _unit.Attack1(afterAttacking);
+                        break;
+                    case ATTACK_ACTION.MEDIUM:
+                        _unit.Attack2(afterAttacking);
+                        break;
+                    case ATTACK_ACTION.HARD:
+                    default:
+                        _unit.Attack3(afterAttacking);
+                        break;
+                }
             }
-        });
+        );
     }
 
-    private void afterAttacking()
+    private void afterAttacking(int actionId)
     {
-        _endTurnCallback();
+        _endTurnCallback(actionId);
     }
 }

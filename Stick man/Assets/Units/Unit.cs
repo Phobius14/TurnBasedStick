@@ -12,25 +12,38 @@ public class Unit : MonoBehaviour
     internal bool AI;
     internal int ID;
     public UnitSettings UnitSettings;
-    protected CoreCallback _afterAttack;
+    protected CoreIdCallback _afterAttack;
 
-    public virtual void Attack1(CoreCallback afterAttack)
+    public virtual void Attack1(CoreIdCallback afterAttack)
     {
         _afterAttack = afterAttack;
 
         Debug.Log(gameObject.name + " -> <b>Attack 1</b> !!");
-        __.Time.RxWait(() => {
-            _afterAttack();
+        __.Time.RxWait(() =>
+        {
+            _afterAttack(0);
         }, 1f);
     }
 
-    internal void Attack2(Action afterAttacking)
+    public virtual void Attack2(CoreIdCallback afterAttack)
     {
-        throw new NotImplementedException();
+        _afterAttack = afterAttack;
+
+        Debug.Log(gameObject.name + " -> <b>Attack 2</b> !!");
+        __.Time.RxWait(() =>
+        {
+            _afterAttack(1);
+        }, 1f);
     }
 
-    internal void Attack3(Action afterAttacking)
+    public virtual void Attack3(CoreIdCallback afterAttack)
     {
-        throw new NotImplementedException();
+        _afterAttack = afterAttack;
+
+        Debug.Log(gameObject.name + " -> <b>Attack 3</b> !!");
+        __.Time.RxWait(() =>
+        {
+            _afterAttack(2);
+        }, 1f);
     }
 }

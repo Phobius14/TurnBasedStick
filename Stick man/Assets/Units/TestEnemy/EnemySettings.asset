@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: EnemySettings
   m_EditorClassIdentifier: 
   TimelineIndicator: {fileID: 4610051357446208782, guid: 86d3dd4ccc223334f946890138d95bd4, type: 3}
-  AttackIndicator: {fileID: 0}
+  AttackIndicator: {fileID: 2445873264157571330, guid: 43ad9895d017af841b1525cc363a2edc, type: 3}
   GhostIndicator: {fileID: 7392373774773857649, guid: 13d389b0a2ebae14e8e9f9c6f53b8293, type: 3}

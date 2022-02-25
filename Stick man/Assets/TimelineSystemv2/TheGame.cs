@@ -6,7 +6,7 @@ public class TheGame : GameBase
     [Header("The Game")]
 
     public Timeline TimelineRef;
-
+    public bool StopTurns;
     public bool Team1AI;
     public List<Unit> Team1;
     public bool Team2AI;
@@ -50,6 +50,8 @@ public class TheGame : GameBase
 
     private void NextTurn()
     {
+        if (StopTurns) { return; }
+
         TimelineRef.DragAllCloserToTurn((object obj) =>
         {
             IUnitControlable unitControlable;
@@ -69,12 +71,13 @@ public class TheGame : GameBase
         });
     }
 
-    private void duringDecision()
+    private void duringDecision(int actionId)
     {
-        Debug.Log("------------duringTurnAnimation()");
+        TimelineRef.ShowDelayedAttack((ATTACK_ACTION)actionId);
+        // Debug.Log("------[" + actionId + "]------duringTurnAnimation()");
     }
 
-    private void endTurn()
+    private void endTurn(int actionId)
     {
         Debug.Log("-------------------End Turn");
 
@@ -90,6 +93,10 @@ public class TheGame : GameBase
         if (Input.GetKeyUp(KeyCode.A))
         {
             NextTurn();
+        }
+        if (Input.GetKeyUp(KeyCode.S))
+        {
+            StopTurns = !StopTurns;
         }
     }
 }

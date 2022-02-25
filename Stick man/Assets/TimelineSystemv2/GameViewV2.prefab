@@ -171,6 +171,7 @@ GameObject:
   - component: {fileID: 3988726698258867504}
   - component: {fileID: 3988726698258867505}
   - component: {fileID: 3988726698258867510}
+  - component: {fileID: 7831786953647356689}
   m_Layer: 5
   m_Name: MediumAttackButton
   m_TagString: Untagged
@@ -292,6 +293,35 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &7831786953647356689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3988726698258867508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 559631373068286948}
+          m_TargetAssemblyTypeName: TurnGameView, Assembly-CSharp
+          m_MethodName: HoverAttack
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 1
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &3988726698276342264
 GameObject:
   m_ObjectHideFlags: 0
@@ -304,6 +334,7 @@ GameObject:
   - component: {fileID: 3988726698276342260}
   - component: {fileID: 3988726698276342261}
   - component: {fileID: 3988726698276342266}
+  - component: {fileID: 506003729095102678}
   m_Layer: 5
   m_Name: HardAttackButton
   m_TagString: Untagged
@@ -425,6 +456,35 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &506003729095102678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3988726698276342264}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 559631373068286948}
+          m_TargetAssemblyTypeName: TurnGameView, Assembly-CSharp
+          m_MethodName: HoverAttack
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 2
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &3988726698405328913
 GameObject:
   m_ObjectHideFlags: 0
@@ -513,6 +573,7 @@ MonoBehaviour:
   Level3: {fileID: 6072415805512120690}
   TimelineIndicators: []
   GhostIndicators: []
+  AttackIndicators: []
 --- !u!1 &3988726698445609314
 GameObject:
   m_ObjectHideFlags: 0
@@ -645,11 +706,11 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 34
+    m_FontSize: 39
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 15
-    m_MaxSize: 66
+    m_MinSize: 17
+    m_MaxSize: 39
     m_Alignment: 4
     m_AlignByGeometry: 1
     m_RichText: 1
@@ -764,6 +825,7 @@ GameObject:
   - component: {fileID: 3988726699408871409}
   - component: {fileID: 3988726699408871414}
   - component: {fileID: 3988726699408871415}
+  - component: {fileID: 9008125286069442173}
   m_Layer: 5
   m_Name: LightAttackButton
   m_TagString: Untagged
@@ -885,18 +947,35 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+--- !u!114 &9008125286069442173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3988726699408871413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 559631373068286948}
+          m_TargetAssemblyTypeName: TurnGameView, Assembly-CSharp
+          m_MethodName: HoverAttack
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &3988726699549874985
 GameObject:
   m_ObjectHideFlags: 0
@@ -1058,11 +1137,11 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 34
+    m_FontSize: 39
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 15
-    m_MaxSize: 66
+    m_MinSize: 17
+    m_MaxSize: 39
     m_Alignment: 4
     m_AlignByGeometry: 1
     m_RichText: 1
@@ -1137,11 +1216,11 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 34
+    m_FontSize: 39
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 15
-    m_MaxSize: 66
+    m_MinSize: 17
+    m_MaxSize: 39
     m_Alignment: 4
     m_AlignByGeometry: 1
     m_RichText: 1
@@ -1255,7 +1334,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5108067118054995555
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1271,10 +1350,10 @@ RectTransform:
   m_Father: {fileID: 3988726699147140526}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 239.99997, y: -108}
-  m_SizeDelta: {x: 159.99998, y: 216}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6984855694968802070
 CanvasRenderer:
@@ -1546,7 +1625,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5370941242585455844
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1562,10 +1641,10 @@ RectTransform:
   m_Father: {fileID: 3988726699147140526}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 399.99997, y: -108}
-  m_SizeDelta: {x: 159.99998, y: 216}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7745406863599165213
 CanvasRenderer:
