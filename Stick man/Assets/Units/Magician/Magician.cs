@@ -48,7 +48,7 @@ public class Magician : Unit
         });
     }
 
-    public override void Attack2(CoreIdCallback afterAttack)
+    public override void Attack2(CoreIdCallback afterAttack = null)
     {
         _afterAttack = afterAttack;
 
@@ -76,9 +76,21 @@ public class Magician : Unit
             {
                 AttackText.gameObject.SetActive(false);
 
+                if (afterAttack == null) { return; }
                 _afterAttack((int)ATTACK_ACTION.MEDIUM);
             });
         });
     }
 
+    public override void DelayedAttack(int actionId, CoreIdCallback afterAttack = null)
+    {
+        if (actionId == 2)
+        {
+            Attack2(afterAttack);
+        }
+        else
+        {
+            Attack3(afterAttack);
+        }
+    }
 }

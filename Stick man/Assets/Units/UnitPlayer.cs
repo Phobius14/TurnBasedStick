@@ -30,12 +30,10 @@ public class UnitPlayer : MonoBehaviour, IUnitControlable
                         break;
                     case ATTACK_ACTION.MEDIUM:
                         afterAttacking((int)action);
-                        // _unit.Attack2(afterAttacking);
                         break;
                     case ATTACK_ACTION.HARD:
                     default:
                         afterAttacking((int)action);
-                        // _unit.Attack3(afterAttacking);
                         break;
                 }
             }

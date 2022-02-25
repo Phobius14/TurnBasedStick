@@ -25,25 +25,34 @@ public class Unit : MonoBehaviour
         }, 1f);
     }
 
-    public virtual void Attack2(CoreIdCallback afterAttack)
+    public virtual void Attack2(CoreIdCallback afterAttack = null)
     {
         _afterAttack = afterAttack;
 
         Debug.Log(gameObject.name + " -> <b>Attack 2</b> !!");
+
+        if (afterAttack == null) { return; }
         __.Time.RxWait(() =>
         {
             _afterAttack((int)ATTACK_ACTION.MEDIUM);
         }, 1f);
     }
 
-    public virtual void Attack3(CoreIdCallback afterAttack)
+    public virtual void Attack3(CoreIdCallback afterAttack = null)
     {
         _afterAttack = afterAttack;
 
         Debug.Log(gameObject.name + " -> <b>Attack 3</b> !!");
+
+        if (afterAttack == null) { return; }
         __.Time.RxWait(() =>
         {
             _afterAttack((int)ATTACK_ACTION.HARD);
         }, 1f);
+    }
+
+    public virtual void DelayedAttack(int actionId, CoreIdCallback afterAttack = null)
+    {
+        
     }
 }

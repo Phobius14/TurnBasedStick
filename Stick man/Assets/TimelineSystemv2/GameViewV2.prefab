@@ -322,6 +322,22 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 559631373068286948}
+          m_TargetAssemblyTypeName: TurnGameView, Assembly-CSharp
+          m_MethodName: HoverAttack
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &3988726698276342264
 GameObject:
   m_ObjectHideFlags: 0
@@ -485,6 +501,22 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 559631373068286948}
+          m_TargetAssemblyTypeName: TurnGameView, Assembly-CSharp
+          m_MethodName: HoverAttack
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &3988726698405328913
 GameObject:
   m_ObjectHideFlags: 0
@@ -568,12 +600,12 @@ MonoBehaviour:
   TimelineCanvas: {x: 0, y: 0}
   TimelineOneTurnWidth: 0
   OneUnitPercentage: 0
+  UnitIndicators: []
+  GhostIndicators: []
+  AttackIndicators: []
   Level1: {fileID: 6072415805595662227}
   Level2: {fileID: 6072415805603106752}
   Level3: {fileID: 6072415805512120690}
-  TimelineIndicators: []
-  GhostIndicators: []
-  AttackIndicators: []
 --- !u!1 &3988726698445609314
 GameObject:
   m_ObjectHideFlags: 0

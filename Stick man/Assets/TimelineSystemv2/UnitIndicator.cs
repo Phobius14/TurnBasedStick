@@ -2,34 +2,36 @@ using System;
 using Assets.Scripts.utils;
 using UnityEngine;
 
-public class TimelineIndicator : MonoBehaviour
+public class UnitIndicator : MonoBehaviour, ITimelineIndicator
 {
     public RectTransform bg;
     public RectTransform image;
     [Header("Props")]
-    public float TurnWidth;
-    public int Level;
     public float PercentTurn;
-    internal Unit Unit;
-    internal int GhostID;
-    internal int AttackID;
-    private RectTransform _rt;
+    public INDICATOR_TYPE Type { get { return INDICATOR_TYPE.UNIT; } }
+    public Unit Unit { get; set; }
+    public int Level { get; set; }
+    public float TurnWidth { get; set; }
+    public int GhostID { get; set; }
+    public int AttackID { get; set; }
+    public RectTransform Rt { get; set; }
+    public GameObject Go { get { return gameObject; } }
 
     internal void Init(Unit unit)
     {
         Unit = unit;
 
-        _rt = transform as RectTransform;
+        Rt = transform as RectTransform;
 
         if (!bg) { return; }
 
-        var size = __percent.Find(70, _rt.sizeDelta.y);
-        var pos = (_rt.sizeDelta.y - size) / 2;
+        var size = __percent.Find(70, Rt.sizeDelta.y);
+        var pos = (Rt.sizeDelta.y - size) / 2;
         bg.sizeDelta = new Vector2(size, size);
         bg.anchoredPosition = new Vector2(pos, -pos);
 
-        size = __percent.Find(60, _rt.sizeDelta.y);
-        pos = (_rt.sizeDelta.y - size) / 2;
+        size = __percent.Find(60, Rt.sizeDelta.y);
+        pos = (Rt.sizeDelta.y - size) / 2;
 
         image.sizeDelta = new Vector2(size, size);
         image.anchoredPosition = new Vector2(pos, -pos);

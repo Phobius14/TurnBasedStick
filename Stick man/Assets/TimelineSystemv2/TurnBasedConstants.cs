@@ -10,22 +10,31 @@ public enum ATTACK_ACTION
 
 public static class TimelineUtils
 {
-    public static RectTransform Level1;
-    public static RectTransform Level2;
-    public static RectTransform Level3;
+    private static Vector2 _level1Pos;
+    private static Vector2 _level2Pos;
+    private static Vector2 _level3Pos;
 
-    internal static void InitCalculations(float levelHeight)
+    internal static void InitCalculations(
+        ref RectTransform level1, ref RectTransform level2, ref RectTransform level3,
+        float levelHeight
+    )
     {
-        Level1.anchoredPosition = Vector2.zero;
-        Level1.sizeDelta = new Vector2(levelHeight, levelHeight);
-        Level2.anchoredPosition = new Vector2(0, -levelHeight);
-        Level2.sizeDelta = new Vector2(levelHeight, levelHeight);
-        Level3.anchoredPosition = new Vector2(0, -levelHeight * 2);
-        Level3.sizeDelta = new Vector2(levelHeight, levelHeight);
+        level1.anchoredPosition = Vector2.zero;
+        level1.sizeDelta = new Vector2(levelHeight, levelHeight);
+
+        level2.anchoredPosition = new Vector2(0, -levelHeight);
+        level2.sizeDelta = new Vector2(levelHeight, levelHeight);
+
+        level3.anchoredPosition = new Vector2(0, -levelHeight * 2);
+        level3.sizeDelta = new Vector2(levelHeight, levelHeight);
+
+        _level1Pos = level1.anchoredPosition;
+        _level2Pos = level2.anchoredPosition;
+        _level3Pos = level3.anchoredPosition;
     }
 
-    internal static TimelineIndicator SolveClosestIndicator(
-        List<TimelineIndicator> tIndicators,
+    internal static UnitIndicator SolveClosestIndicator(
+        List<UnitIndicator> tIndicators,
         KeyValuePair<int, float> closest, KeyValuePair<int, float> farthest
     )
     {
@@ -33,7 +42,7 @@ public static class TimelineUtils
             && closest.Key < Timeline.ATTACKINDICATOR_ID_THRESHOLD;
         var isClosestAttack = closest.Key > Timeline.ATTACKINDICATOR_ID_THRESHOLD;
 
-        TimelineIndicator closestIndicator = (isClosestGhost
+        UnitIndicator closestIndicator = (isClosestGhost
             ? tIndicators.Find(ti => ti.GhostID == closest.Key)
             : (isClosestAttack
                 ? tIndicators.Find(ti => ti.AttackID == closest.Key)
@@ -60,31 +69,34 @@ public static class TimelineUtils
         return indicator;
     }
 
-    internal static TimelineIndicator GetClosestToTurn(
+    internal static ITimelineIndicator GetClosestToTurn(
         ref float? _distanceToFirst,
-        List<TimelineIndicator> tIndicators,
+        List<UnitIndicator> tIndicators,
         List<AttackIndicator> aIndicators
     )
     {
-        TimelineIndicator tIndicator = null;
-        _distanceToFirst = 9999;
-        foreach (var indicator in tIndicators)
-        {
-            if (indicator.gameObject.activeInHierarchy == false) { continue; }
+        List<ITimelineIndicator> combined = new List<ITimelineIndicator>();
+        combined.AddRange(tIndicators);
+        combined.AddRange(aIndicators);
 
-            var iRt = (indicator.transform as RectTransform);
+        ITimelineIndicator tIndicator = null;
+        _distanceToFirst = 9999;
+        foreach (ITimelineIndicator indicator in combined)
+        {
+            if (indicator.Go.activeInHierarchy == false) { continue; }
+
             float? distance = null;
             if (indicator.Level == 1)
             {
-                distance = Vector2.Distance(Level1.anchoredPosition, iRt.anchoredPosition);
+                distance = Vector2.Distance(_level1Pos, indicator.Rt.anchoredPosition);
             }
             else if (indicator.Level == 2)
             {
-                distance = Vector2.Distance(Level2.anchoredPosition, iRt.anchoredPosition);
+                distance = Vector2.Distance(_level2Pos, indicator.Rt.anchoredPosition);
             }
             else
             {
-                distance = Vector2.Distance(Level3.anchoredPosition, iRt.anchoredPosition);
+                distance = Vector2.Distance(_level3Pos, indicator.Rt.anchoredPosition);
             }
 
             if (distance.HasValue == false)
@@ -99,37 +111,40 @@ public static class TimelineUtils
             }
         }
 
-        foreach (var ai in aIndicators)
-        {
-            if (ai.gameObject.activeInHierarchy == false) { continue; }
+        // Debug.Log("_distanceToFirst: " + _distanceToFirst);
 
-            var iRt = (ai.transform as RectTransform);
-            float? distance = null;
-            if (ai.TimelineIndicator.Level == 1)
-            {
-                distance = Vector2.Distance(Level1.anchoredPosition, iRt.anchoredPosition);
-            }
-            else if (ai.TimelineIndicator.Level == 2)
-            {
-                distance = Vector2.Distance(Level2.anchoredPosition, iRt.anchoredPosition);
-            }
-            else
-            {
-                distance = Vector2.Distance(Level3.anchoredPosition, iRt.anchoredPosition);
-            }
+        // foreach (var ai in aIndicators)
+        // {
+        //     if (ai.gameObject.activeInHierarchy == false) { continue; }
 
-            if (distance.HasValue == false)
-            {
-                continue;
-            }
+        //     var iRt = (ai.transform as RectTransform);
+        //     float? distance = null;
+        //     if (ai.TimelineIndicator.Level == 1)
+        //     {
+        //         distance = Vector2.Distance(_level1Pos, iRt.anchoredPosition);
+        //     }
+        //     else if (ai.TimelineIndicator.Level == 2)
+        //     {
+        //         distance = Vector2.Distance(_level2Pos, iRt.anchoredPosition);
+        //     }
+        //     else
+        //     {
+        //         distance = Vector2.Distance(_level3Pos, iRt.anchoredPosition);
+        //     }
 
-            if (distance < _distanceToFirst)
-            {
-                // TODO: return an interface
-                // tIndicator = ai;
-                _distanceToFirst = distance.Value;
-            }
-        }
+        //     if (distance.HasValue == false)
+        //     {
+        //         continue;
+        //     }
+
+        //     if (distance < _distanceToFirst)
+        //     {
+        //         tIndicator = ai;
+        //         _distanceToFirst = distance.Value;
+        //     }
+        // }
+        Debug.Log("tIndicator: " + tIndicator);
+        Debug.Log("_distanceToFirst: " + _distanceToFirst);
         return tIndicator;
     }
 }

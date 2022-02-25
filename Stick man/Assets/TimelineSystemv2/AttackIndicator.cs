@@ -2,21 +2,29 @@ using System;
 using Assets.Scripts.utils;
 using UnityEngine;
 
-public class AttackIndicator : MonoBehaviour
+public class AttackIndicator : MonoBehaviour, ITimelineIndicator
 {
     public RectTransform bg;
     public RectTransform image;
     [Header("Props")]
     public int ID;
-    internal TimelineIndicator TimelineIndicator;
-    internal int UnitID;
-    internal RectTransform Rt;
+    internal UnitIndicator TimelineIndicator;
+    public INDICATOR_TYPE Type { get { return INDICATOR_TYPE.ATTACK; } }
+    public Unit Unit { get; set; }
+    public int Level { get; set; }
+    public float TurnWidth { get; set; }
+    public int GhostID { get; set; }
+    public int AttackID { get { return ID; } set { ID = value; } }
+    public RectTransform Rt { get; set; }
+    public GameObject Go { get { return gameObject; } }
 
-    internal void Init(TimelineIndicator timelineIndicator)
+    internal void Init(UnitIndicator timelineIndicator)
     {
         TimelineIndicator = timelineIndicator;
-        UnitID = TimelineIndicator.Unit.ID;
-        ID = UnitID + Timeline.ATTACKINDICATOR_ID_THRESHOLD;
+        Unit = TimelineIndicator.Unit;
+        ID = Unit.ID + Timeline.ATTACKINDICATOR_ID_THRESHOLD;
+
+        GhostID = timelineIndicator.GhostID;
 
         Rt = transform as RectTransform;
 
@@ -36,7 +44,7 @@ public class AttackIndicator : MonoBehaviour
     {
         return String.Format(@"
         ID: {0},
-        UnitID: {1}
-        ", ID, UnitID);
+        Unit.ID: {1}
+        ", ID, Unit.ID);
     }
 }

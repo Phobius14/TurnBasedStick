@@ -1,12 +1,30 @@
 
 using System;
 using System.Collections.Generic;
+using UnityEngine;
+
+public enum INDICATOR_TYPE
+{
+    UNIT, ATTACK
+}
+
+public interface ITimelineIndicator
+{
+    INDICATOR_TYPE Type { get; }
+    Unit Unit { get; set; }
+    int Level { get; set; }
+    RectTransform Rt { get; set; }
+    GameObject Go { get; }
+    float TurnWidth { get; set; }
+    int GhostID { get; set; }
+    int AttackID { get; set; }
+}
 
 public class OverlappingPercentage
 {
     public float Percent;
     public float Min;
-    public List<TimelineIndicator> Duplicates;
+    public List<UnitIndicator> Duplicates;
     public float Max;
 
     public override string ToString()

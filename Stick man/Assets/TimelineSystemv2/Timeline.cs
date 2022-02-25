@@ -10,9 +10,12 @@ public class Timeline : MonoBehaviour
     public Vector2 TimelineCanvas;
     public float TimelineOneTurnWidth;
     public float OneUnitPercentage;
-    public List<TimelineIndicator> TimelineIndicators;
+    public List<UnitIndicator> UnitIndicators;
     public List<GhostIndicator> GhostIndicators;
     public List<AttackIndicator> AttackIndicators;
+    public RectTransform Level1;
+    public RectTransform Level2;
+    public RectTransform Level3;
     public static float LevelHeight;
     private List<Unit> _allUnits;
     private GameObject _valueTweenGo;
@@ -20,7 +23,7 @@ public class Timeline : MonoBehaviour
     private int? _pullAllTwId;
     private float? _distanceToFirst;
     private float _distanceSoFar;
-    private TimelineIndicator _currentTimelineIndicator;
+    private ITimelineIndicator _currentTimelineIndicator;
     private int? _pushOneTwId;
     private int? _moveAttackTwId;
     private CoreCallback _endingTurnCallback;
@@ -40,7 +43,7 @@ public class Timeline : MonoBehaviour
         OneUnitPercentage = __percent.What(LevelHeight, TimelineOneTurnWidth) / 2;
         Debug.Log("OneUnitPercentage: " + OneUnitPercentage);
 
-        TimelineUtils.InitCalculations(LevelHeight);
+        TimelineUtils.InitCalculations(ref Level1, ref Level2, ref Level3, LevelHeight);
 
         _allUnits = new List<Unit>();
         _allUnits.AddRange(team1);
@@ -53,7 +56,7 @@ public class Timeline : MonoBehaviour
 
         checkPercentageDistribution();
 
-        foreach (var indicator in TimelineIndicators)
+        foreach (var indicator in UnitIndicators)
         {
             indicator.TurnWidth = __percent.Find(indicator.PercentTurn, TimelineOneTurnWidth);
             indicator.Level = 1;
@@ -71,7 +74,7 @@ public class Timeline : MonoBehaviour
                 getLevelYPos(indicator.Level)
             );
 
-            var aiIndex = AttackIndicators.FindIndex(ai => ai.UnitID == indicator.Unit.ID);
+            var aiIndex = AttackIndicators.FindIndex(ai => ai.Unit.ID == indicator.Unit.ID);
             var aiRt = AttackIndicators[giIndex].transform as RectTransform;
             aiRt.anchoredPosition = new Vector2(0, getLevelYPos(1));
 
@@ -84,7 +87,7 @@ public class Timeline : MonoBehaviour
     public void DragAllCloserToTurn(CoreObjCallback setNextToDoTurn)
     {
         _currentTimelineIndicator = TimelineUtils.GetClosestToTurn(
-            ref _distanceToFirst, TimelineIndicators, AttackIndicators
+            ref _distanceToFirst, UnitIndicators, AttackIndicators
         );
 
         _setNextToDoTurn = setNextToDoTurn;
@@ -105,7 +108,7 @@ public class Timeline : MonoBehaviour
                 var diff = _distanceSoFar - newPos;
                 _distanceSoFar = newPos;
 
-                foreach (var indicator in TimelineIndicators)
+                foreach (var indicator in UnitIndicators)
                 {
                     var iRt = (indicator.transform as RectTransform);
                     iRt.anchoredPosition = new Vector2(
@@ -159,7 +162,7 @@ public class Timeline : MonoBehaviour
                     getLevelYPos(3)
                 );
                 attackIndicator.gameObject.SetActive(true);
-                _currentTimelineIndicator.gameObject.SetActive(false);
+                _currentTimelineIndicator.Go.SetActive(false);
 
                 break;
             case ATTACK_ACTION.MEDIUM:
@@ -169,13 +172,15 @@ public class Timeline : MonoBehaviour
                     getLevelYPos(2)
                 );
                 attackIndicator.gameObject.SetActive(true);
-                _currentTimelineIndicator.gameObject.SetActive(false);
+                _currentTimelineIndicator.Go.SetActive(false);
 
                 break;
             case ATTACK_ACTION.LIGHT:
             default:
 
                 toPos = new Vector2(0, getLevelYPos(1));
+                _currentTimelineIndicator.Rt.anchoredPosition
+                    = toPos;
 
                 break;
         }
@@ -220,9 +225,22 @@ public class Timeline : MonoBehaviour
                 if (action == ATTACK_ACTION.LIGHT)
                 {
                     attackIndicator.gameObject.SetActive(false);
-                    _currentTimelineIndicator.gameObject.SetActive(true);
+                    _currentTimelineIndicator.Go.SetActive(true);
                 }
             });
+    }
+
+    internal void DoDelayedAttack(ITimelineIndicator ti, CoreCallback endingTurnCallback)
+    {
+        var ui = UnitIndicators.Find(ui => ui.AttackID == ti.AttackID);
+
+        ui.Rt.anchoredPosition = ti.Rt.anchoredPosition;
+        ti.Go.SetActive(false);
+        ui.Go.SetActive(true);
+
+        _currentTimelineIndicator = ui;
+
+        MoveCurrentIndicatorToHisNextTurn(endingTurnCallback);
     }
 
     public void MoveCurrentIndicatorToHisNextTurn(CoreCallback endingTurnCallback)
@@ -232,6 +250,7 @@ public class Timeline : MonoBehaviour
         _distanceSoFar = 0;
         var fromPos = 0;
         var toPos = _currentTimelineIndicator.TurnWidth;
+        Debug.Log("_currentTimelineIndicator: " + _currentTimelineIndicator);
 
         _pushOneTwId = LeanTween.value(
             fromPos,
@@ -245,7 +264,7 @@ public class Timeline : MonoBehaviour
                 var diff = newPos - _distanceSoFar;
                 _distanceSoFar = newPos;
 
-                var iRt = (_currentTimelineIndicator.transform as RectTransform);
+                var iRt = _currentTimelineIndicator.Rt;
                 iRt.anchoredPosition = new Vector2(
                     iRt.anchoredPosition.x + diff,
                     iRt.anchoredPosition.y
@@ -259,20 +278,26 @@ public class Timeline : MonoBehaviour
                 );
             });
 
-        if (_endingTurnCallback != null)
-        {
-            LeanTween.descr(_pushOneTwId.Value)
-                .setOnComplete(() =>
-                {
-                    ResetTimeline();
-                    if (CheckIfIndicatorsOverlap())
-                    {
-                        return;
-                    }
+        if (_endingTurnCallback == null) { return; }
 
-                    _endingTurnCallback();
-                });
-        }
+        LeanTween.descr(_pushOneTwId.Value)
+            .setOnComplete(() =>
+            {
+                ResetTimeline();
+                if (CheckIfIndicatorsOverlap())
+                {
+                    return;
+                }
+
+                _endingTurnCallback();
+            });
+    }
+
+    public void SetLevelToCurrent(int actionLevel)
+    {
+        _currentTimelineIndicator.Level = actionLevel;
+        var ai = AttackIndicators.Find(ai => ai.ID == _currentTimelineIndicator.AttackID);
+        ai.Level = actionLevel;
     }
 
     public void ResetTimeline()
@@ -292,7 +317,7 @@ public class Timeline : MonoBehaviour
         indicatorRt.anchoredPosition = Vector2.zero;
         indicatorRt.sizeDelta = new Vector2(LevelHeight, LevelHeight);
 
-        var indicator = indicatorRt.GetComponent<TimelineIndicator>();
+        var indicator = indicatorRt.GetComponent<UnitIndicator>();
         indicator.Init(unit);
         go.name = "(" + unit.ID + ")" + unit.Name;
 
@@ -326,7 +351,7 @@ public class Timeline : MonoBehaviour
 
         indicator.AttackID = attackIndicator.ID;
 
-        TimelineIndicators.Add(indicator);
+        UnitIndicators.Add(indicator);
         GhostIndicators.Add(ghostIndicator);
         AttackIndicators.Add(attackIndicator);
     }
@@ -339,7 +364,7 @@ public class Timeline : MonoBehaviour
         }
         var unsorted = new Dictionary<int, float>();
 
-        TimelineIndicators.ForEach(ti =>
+        UnitIndicators.ForEach(ti =>
         {
             if (ti.gameObject.activeInHierarchy == false) { return; }
             unsorted.Add(
@@ -404,23 +429,10 @@ public class Timeline : MonoBehaviour
                 //     " => " + closest.Value + " > " + (farthest.Value - offset)
                 // );
 
-                // Solve concurency issue
                 var indicator = TimelineUtils.SolveClosestIndicator(
-                    TimelineIndicators,
+                    UnitIndicators,
                     closest, farthest
                 );
-                // var isClosestGhost = closest.Key > GHOSTINDICATOR_ID_THRESHOLD;
-                // var closestIndicator = isClosestGhost
-                //     ? TimelineIndicators.Find(ti => ti.GhostID == closest.Key)
-                //     : TimelineIndicators.Find(ti => ti.Unit.ID == closest.Key);
-
-                // var isFarthestGhost = farthest.Key > GHOSTINDICATOR_ID_THRESHOLD;
-                // var farthestIndicator = isFarthestGhost
-                //     ? TimelineIndicators.Find(ti => ti.GhostID == farthest.Key)
-                //     : TimelineIndicators.Find(ti => ti.Unit.ID == farthest.Key);
-
-                // var indicator = closestIndicator.Unit.Haste >= farthestIndicator.Unit.Haste
-                //     ? closestIndicator : farthestIndicator;
 
                 var currentPercentageOfIndicator = allRectsXP[indicator.Unit.ID];
                 var pIndex = allPercentages.FindIndex(ap => ap == currentPercentageOfIndicator);
@@ -444,7 +456,7 @@ public class Timeline : MonoBehaviour
                         Min = min,
                         Max = max,
                         Percent = currentPercentageOfIndicator,
-                        Duplicates = new List<TimelineIndicator> { indicator }
+                        Duplicates = new List<UnitIndicator> { indicator }
                     });
                 }
             }
@@ -474,7 +486,7 @@ public class Timeline : MonoBehaviour
             {
                 indicatorsToMove.Add(new IndicatorMove()
                 {
-                    IndicatorIndex = TimelineIndicators.FindIndex(ti => ti.Unit.ID == dpTi.Unit.ID),
+                    IndicatorIndex = UnitIndicators.FindIndex(ti => ti.Unit.ID == dpTi.Unit.ID),
                     UnitID = dpTi.Unit.ID,
                     MoveLeft = moveLeft,
                     OffsetPercent = (i * howMuchWeOffset)
@@ -526,9 +538,9 @@ public class Timeline : MonoBehaviour
                 distanceSoFar = newPos;
                 // Debug.Log("diff: " + diff);
 
-                var tiRt = (TimelineIndicators[im.IndicatorIndex].transform as RectTransform);
+                var tiRt = (UnitIndicators[im.IndicatorIndex].transform as RectTransform);
                 var giRt = GhostIndicators
-                    .Find(gi => gi.ID == TimelineIndicators[im.IndicatorIndex].GhostID)
+                    .Find(gi => gi.ID == UnitIndicators[im.IndicatorIndex].GhostID)
                     .transform as RectTransform;
 
                 tiRt.anchoredPosition = tiRt.anchoredPosition + new Vector2(diff, 0);
@@ -540,15 +552,15 @@ public class Timeline : MonoBehaviour
     {
         var duplicatePercentages = new List<OverlappingPercentage>();
 
-        var highestHaste = TimelineIndicators.Max(ti => ti.Unit.Haste);
-        foreach (var indicator in TimelineIndicators)
+        var highestHaste = UnitIndicators.Max(ti => ti.Unit.Haste);
+        foreach (var indicator in UnitIndicators)
         {
             var percentHaste = __percent.What(indicator.Unit.Haste, highestHaste);
             indicator.PercentTurn = percentHaste;
         }
         // __debug.DebugList<TimelineIndicator>(TimelineIndicators, "TimelineIndicators: ");
 
-        var sorted = TimelineIndicators.OrderBy(o => o.PercentTurn).Reverse().ToList();
+        var sorted = UnitIndicators.OrderBy(o => o.PercentTurn).Reverse().ToList();
         // __debug.DebugList<TimelineIndicator>(sorted, "sorted: ");
 
         var allPercentages = sorted.Select(s => s.PercentTurn).Distinct().ToList();
@@ -596,8 +608,8 @@ public class Timeline : MonoBehaviour
             int i = 0;
             foreach (var dpTi in dp.Duplicates)
             {
-                var tiIndex = TimelineIndicators.FindIndex(ti => ti.Unit.ID == dpTi.Unit.ID);
-                TimelineIndicators[tiIndex].PercentTurn = dp.Percent - (i * howMuchWeOffset);
+                var tiIndex = UnitIndicators.FindIndex(ti => ti.Unit.ID == dpTi.Unit.ID);
+                UnitIndicators[tiIndex].PercentTurn = dp.Percent - (i * howMuchWeOffset);
                 i++;
             }
         }

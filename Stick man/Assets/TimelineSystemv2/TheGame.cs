@@ -54,10 +54,20 @@ public class TheGame : GameBase
 
         TimelineRef.DragAllCloserToTurn((object obj) =>
         {
-            IUnitControlable unitControlable;
-            var ti = (obj as TimelineIndicator);
-            var currentUnit = ti.Unit;
+            var ti = (obj as ITimelineIndicator);
 
+            if (ti.Type == INDICATOR_TYPE.ATTACK)
+            {
+                ti.Unit.DelayedAttack(ti.Level, (int actionId) =>
+                {
+                    mergeMapEndingTurn();
+                });
+                TimelineRef.DoDelayedAttack(ti, mergeMapEndingTurn);
+                return;
+            }
+
+            IUnitControlable unitControlable;
+            var currentUnit = ti.Unit;
             if (currentUnit.AI)
             {
                 unitControlable = currentUnit.gameObject.GetComponent<UnitAi>();
@@ -66,7 +76,7 @@ public class TheGame : GameBase
             {
                 unitControlable = currentUnit.gameObject.GetComponent<UnitPlayer>();
             }
-
+            TimelineRef.ShowDelayedAttack(ATTACK_ACTION.LIGHT);
             unitControlable.DoTurn(duringDecision, endTurn);
         });
     }
@@ -80,6 +90,8 @@ public class TheGame : GameBase
     private void endTurn(int actionId)
     {
         Debug.Log("---------[" + actionId + "]----------End Turn");
+
+        TimelineRef.SetLevelToCurrent(actionId + 1);
 
         // TODO: write proper if
         if (actionId == 1 || actionId == 2)
@@ -97,6 +109,16 @@ public class TheGame : GameBase
         }
 
         TimelineRef.MoveCurrentIndicatorToHisNextTurn(endingTurn);
+    }
+
+    private int mergeMap = 0;
+    private void mergeMapEndingTurn()
+    {
+        mergeMap++;
+        if (mergeMap < 2) { return; }
+
+        mergeMap = 0;
+        endingTurn();
     }
 
     private void endingTurn()
