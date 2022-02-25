@@ -6,6 +6,5 @@ public class UnitSettings : ScriptableObject
 
     [Header("Prefabs")]
     public GameObject TimelineIndicator;
-    public GameObject AttackIndicator;
     public GameObject GhostIndicator;
 }

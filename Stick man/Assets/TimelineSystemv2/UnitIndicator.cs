@@ -6,6 +6,7 @@ public class UnitIndicator : MonoBehaviour, ITimelineIndicator
 {
     public RectTransform bg;
     public RectTransform image;
+    public RectTransform AttackIndicator;
     [Header("Props")]
     public float PercentTurn;
     public INDICATOR_TYPE Type { get { return INDICATOR_TYPE.UNIT; } }
@@ -13,7 +14,6 @@ public class UnitIndicator : MonoBehaviour, ITimelineIndicator
     public int Level { get; set; }
     public float TurnWidth { get; set; }
     public int GhostID { get; set; }
-    public int AttackID { get; set; }
     public RectTransform Rt { get; set; }
     public GameObject Go { get { return gameObject; } }
 
@@ -35,23 +35,33 @@ public class UnitIndicator : MonoBehaviour, ITimelineIndicator
 
         image.sizeDelta = new Vector2(size, size);
         image.anchoredPosition = new Vector2(pos, -pos);
+
+        var bgSize = __percent.Find(150, Rt.sizeDelta.y);
+        AttackIndicator.sizeDelta = new Vector2(bgSize, Rt.sizeDelta.y);
+        AttackIndicator.anchoredPosition = new Vector2(0, -pos);
+
+        ShowAttackIndicator(false);
+    }
+
+    public void ShowAttackIndicator(bool show = true)
+    {
+        bg.gameObject.SetActive(!show);
+        AttackIndicator.gameObject.SetActive(show);
     }
 
     public override string ToString()
     {
-        return "\n" + String.Format(@"UnitId: {0},
+        return "\n" + String.Format(@"Unit.ID: {0},
         TurnWidth: {1},
         Level: {2},
         PercentTurn: {3}
         GhostID: {4},
-        AttackID: {5},
-        INDICATOR_TYPE: {6}",
+        INDICATOR_TYPE: {5}",
         Unit.ID,
         TurnWidth,
         Level,
         PercentTurn,
         GhostID,
-        AttackID,
         Type
         );
     }

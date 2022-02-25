@@ -17,7 +17,8 @@ public interface ITimelineIndicator
     GameObject Go { get; }
     float TurnWidth { get; set; }
     int GhostID { get; set; }
-    int AttackID { get; set; }
+
+    void ShowAttackIndicator(bool show = true);
 }
 
 public class OverlappingPercentage

@@ -84,7 +84,7 @@ public class TheGame : GameBase
     private void duringDecision(int actionId)
     {
         TimelineRef.ShowDelayedAttack((ATTACK_ACTION)actionId);
-        // Debug.Log("------[" + actionId + "]------duringTurnAnimation()");
+        Debug.Log("------[" + actionId + "]------duringTurnAnimation()");
     }
 
     private void endTurn(int actionId)
