@@ -18,7 +18,7 @@ public class UnitAi : MonoBehaviour, IUnitControlable
         }
 
         // TODO: make AI make a decision
-        _duringDecisionCallback(1);
+        _duringDecisionCallback((int)ATTACK_ACTION.LIGHT);
 
         _unit.Attack1((int actionId) =>
         {

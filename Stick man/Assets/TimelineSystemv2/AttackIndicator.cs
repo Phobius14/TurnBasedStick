@@ -8,13 +8,15 @@ public class AttackIndicator : MonoBehaviour
     public RectTransform image;
     [Header("Props")]
     public int ID;
+    internal TimelineIndicator TimelineIndicator;
     internal int UnitID;
     internal RectTransform Rt;
 
-    internal void Init(int unitID)
+    internal void Init(TimelineIndicator timelineIndicator)
     {
-        ID = unitID + 2000;
-        UnitID = unitID;
+        TimelineIndicator = timelineIndicator;
+        UnitID = TimelineIndicator.Unit.ID;
+        ID = UnitID + Timeline.ATTACKINDICATOR_ID_THRESHOLD;
 
         Rt = transform as RectTransform;
 

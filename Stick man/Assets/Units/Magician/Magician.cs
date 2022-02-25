@@ -43,7 +43,7 @@ public class Magician : Unit
             {
                 AttackText.gameObject.SetActive(false);
 
-                _afterAttack(1);
+                _afterAttack((int)ATTACK_ACTION.LIGHT);
             });
         });
     }
@@ -76,7 +76,7 @@ public class Magician : Unit
             {
                 AttackText.gameObject.SetActive(false);
 
-                _afterAttack(2);
+                _afterAttack((int)ATTACK_ACTION.MEDIUM);
             });
         });
     }

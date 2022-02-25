@@ -21,7 +21,7 @@ public class Unit : MonoBehaviour
         Debug.Log(gameObject.name + " -> <b>Attack 1</b> !!");
         __.Time.RxWait(() =>
         {
-            _afterAttack(0);
+            _afterAttack((int)ATTACK_ACTION.LIGHT);
         }, 1f);
     }
 
@@ -32,7 +32,7 @@ public class Unit : MonoBehaviour
         Debug.Log(gameObject.name + " -> <b>Attack 2</b> !!");
         __.Time.RxWait(() =>
         {
-            _afterAttack(1);
+            _afterAttack((int)ATTACK_ACTION.MEDIUM);
         }, 1f);
     }
 
@@ -43,7 +43,7 @@ public class Unit : MonoBehaviour
         Debug.Log(gameObject.name + " -> <b>Attack 3</b> !!");
         __.Time.RxWait(() =>
         {
-            _afterAttack(2);
+            _afterAttack((int)ATTACK_ACTION.HARD);
         }, 1f);
     }
 }

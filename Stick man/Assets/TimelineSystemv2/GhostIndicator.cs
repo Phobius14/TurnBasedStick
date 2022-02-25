@@ -13,7 +13,7 @@ public class GhostIndicator : MonoBehaviour
 
     internal void Init(int unitID)
     {
-        ID = unitID + 1000;
+        ID = unitID + Timeline.GHOSTINDICATOR_ID_THRESHOLD;
         UnitID = unitID;
 
         Rt = transform as RectTransform;

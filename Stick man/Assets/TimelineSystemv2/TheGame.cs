@@ -79,13 +79,30 @@ public class TheGame : GameBase
 
     private void endTurn(int actionId)
     {
-        Debug.Log("-------------------End Turn");
+        Debug.Log("---------[" + actionId + "]----------End Turn");
 
-        TimelineRef.MoveCurrentIndicatorToHisNextTurn(() =>
+        // TODO: write proper if
+        if (actionId == 1 || actionId == 2)
         {
-            NextTurn();
-            Debug.Log("Hit <b>A</b> to move NextTurn()");
-        });
+            // TODO: to think about making space for attack
+            // - there is space in the first row, so we can drag all to where it meets attackIndctr
+            // - and push all after
+            TimelineRef.ResetTimeline();
+            bool indicatorsOverlap = TimelineRef.CheckIfIndicatorsOverlap(endingTurn);
+            if (indicatorsOverlap == false)
+            {
+                endingTurn();
+            }
+            return;
+        }
+
+        TimelineRef.MoveCurrentIndicatorToHisNextTurn(endingTurn);
+    }
+
+    private void endingTurn()
+    {
+        NextTurn();
+        Debug.Log("Hit <b>A</b> to move NextTurn()");
     }
 
     void Update()

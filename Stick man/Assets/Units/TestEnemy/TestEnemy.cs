@@ -45,7 +45,7 @@ public class TestEnemy : Unit
             {
                 AttackText.gameObject.SetActive(false);
 
-                _afterAttack(1);
+                _afterAttack((int)ATTACK_ACTION.LIGHT);
             });
         });
     }

@@ -10,9 +10,6 @@ public class Timeline : MonoBehaviour
     public Vector2 TimelineCanvas;
     public float TimelineOneTurnWidth;
     public float OneUnitPercentage;
-    public RectTransform Level1;
-    public RectTransform Level2;
-    public RectTransform Level3;
     public List<TimelineIndicator> TimelineIndicators;
     public List<GhostIndicator> GhostIndicators;
     public List<AttackIndicator> AttackIndicators;
@@ -28,6 +25,8 @@ public class Timeline : MonoBehaviour
     private int? _moveAttackTwId;
     private CoreCallback _endingTurnCallback;
     // 
+    public static readonly int GHOSTINDICATOR_ID_THRESHOLD = 1000;
+    public static readonly int ATTACKINDICATOR_ID_THRESHOLD = 2000;
     private readonly float MOVE_INDICATORS_TIME = 0.3f;
 
     public void Init(List<Unit> team1, List<Unit> team2)
@@ -41,12 +40,7 @@ public class Timeline : MonoBehaviour
         OneUnitPercentage = __percent.What(LevelHeight, TimelineOneTurnWidth) / 2;
         Debug.Log("OneUnitPercentage: " + OneUnitPercentage);
 
-        Level1.anchoredPosition = Vector2.zero;
-        Level1.sizeDelta = new Vector2(LevelHeight, LevelHeight);
-        Level2.anchoredPosition = new Vector2(0, -LevelHeight);
-        Level2.sizeDelta = new Vector2(LevelHeight, LevelHeight);
-        Level3.anchoredPosition = new Vector2(0, -LevelHeight * 2);
-        Level3.sizeDelta = new Vector2(LevelHeight, LevelHeight);
+        TimelineUtils.InitCalculations(LevelHeight);
 
         _allUnits = new List<Unit>();
         _allUnits.AddRange(team1);
@@ -77,7 +71,7 @@ public class Timeline : MonoBehaviour
                 getLevelYPos(indicator.Level)
             );
 
-            var aiIndex = AttackIndicators.FindIndex(gi => gi.UnitID == indicator.Unit.ID);
+            var aiIndex = AttackIndicators.FindIndex(ai => ai.UnitID == indicator.Unit.ID);
             var aiRt = AttackIndicators[giIndex].transform as RectTransform;
             aiRt.anchoredPosition = new Vector2(0, getLevelYPos(1));
 
@@ -87,46 +81,11 @@ public class Timeline : MonoBehaviour
         _valueTweenGo = new GameObject();
     }
 
-    public TimelineIndicator GetClosestToTurn()
-    {
-        TimelineIndicator tIndicator = null;
-        _distanceToFirst = 9999;
-        foreach (var indicator in TimelineIndicators)
-        {
-            var iRt = (indicator.transform as RectTransform);
-            float? distance = null;
-            if (indicator.Level == 1)
-            {
-                distance = Vector2.Distance(Level1.anchoredPosition, iRt.anchoredPosition);
-            }
-            else if (indicator.Level == 2)
-            {
-                distance = Vector2.Distance(Level2.anchoredPosition, iRt.anchoredPosition);
-            }
-            else
-            {
-                distance = Vector2.Distance(Level3.anchoredPosition, iRt.anchoredPosition);
-            }
-
-            if (distance.HasValue == false)
-            {
-                continue;
-            }
-
-            if (distance < _distanceToFirst)
-            {
-                tIndicator = indicator;
-                _distanceToFirst = distance.Value;
-            }
-        }
-
-        // Debug.Log("_distanceToFirst: " + _distanceToFirst);
-        return tIndicator;
-    }
-
     public void DragAllCloserToTurn(CoreObjCallback setNextToDoTurn)
     {
-        _currentTimelineIndicator = GetClosestToTurn();
+        _currentTimelineIndicator = TimelineUtils.GetClosestToTurn(
+            ref _distanceToFirst, TimelineIndicators, AttackIndicators
+        );
 
         _setNextToDoTurn = setNextToDoTurn;
         _distanceSoFar = _distanceToFirst.Value;
@@ -158,6 +117,15 @@ public class Timeline : MonoBehaviour
                 foreach (var gi in GhostIndicators)
                 {
                     var giRt = (gi.transform as RectTransform);
+                    giRt.anchoredPosition = new Vector2(
+                        giRt.anchoredPosition.x - diff,
+                        giRt.anchoredPosition.y
+                    );
+                }
+
+                foreach (var ai in AttackIndicators)
+                {
+                    var giRt = (ai.transform as RectTransform);
                     giRt.anchoredPosition = new Vector2(
                         giRt.anchoredPosition.x - diff,
                         giRt.anchoredPosition.y
@@ -231,7 +199,7 @@ public class Timeline : MonoBehaviour
             .setOnUpdate((Vector2 newPos) =>
             {
                 var diff = newPos - distanceSoFar;
-                Debug.Log("diff: " + diff);
+                // Debug.Log("diff: " + diff);
                 distanceSoFar = newPos;
 
                 attackIndicator.Rt.anchoredPosition
@@ -296,11 +264,8 @@ public class Timeline : MonoBehaviour
             LeanTween.descr(_pushOneTwId.Value)
                 .setOnComplete(() =>
                 {
-                    _distanceToFirst = null;
-                    _setNextToDoTurn = null;
-                    _currentTimelineIndicator = null;
-
-                    if (checkIfIndicatorsOverlap())
+                    ResetTimeline();
+                    if (CheckIfIndicatorsOverlap())
                     {
                         return;
                     }
@@ -308,6 +273,13 @@ public class Timeline : MonoBehaviour
                     _endingTurnCallback();
                 });
         }
+    }
+
+    public void ResetTimeline()
+    {
+        _distanceToFirst = null;
+        _setNextToDoTurn = null;
+        _currentTimelineIndicator = null;
     }
 
     private void CreateUnitIndicator(Unit unit)
@@ -349,7 +321,7 @@ public class Timeline : MonoBehaviour
         indicatorRt.sizeDelta = new Vector2(LevelHeight, LevelHeight);
 
         var attackIndicator = indicatorRt.GetComponent<AttackIndicator>();
-        attackIndicator.Init(unit.ID);
+        attackIndicator.Init(indicator);
         go.name = "(" + attackIndicator.ID + ") ATTACK" + unit.Name;
 
         indicator.AttackID = attackIndicator.ID;
@@ -359,12 +331,17 @@ public class Timeline : MonoBehaviour
         AttackIndicators.Add(attackIndicator);
     }
 
-    private bool checkIfIndicatorsOverlap()
+    public bool CheckIfIndicatorsOverlap(CoreCallback endingTurnCallback = null)
     {
+        if (endingTurnCallback != null)
+        {
+            _endingTurnCallback = endingTurnCallback;
+        }
         var unsorted = new Dictionary<int, float>();
 
         TimelineIndicators.ForEach(ti =>
         {
+            if (ti.gameObject.activeInHierarchy == false) { return; }
             unsorted.Add(
                 ti.Unit.ID,
                 Mathf.Ceil(__percent.What(
@@ -383,16 +360,27 @@ public class Timeline : MonoBehaviour
                 ))
             );
         });
+        AttackIndicators.ForEach(ai =>
+        {
+            if (ai.gameObject.activeInHierarchy == false) { return; }
+            unsorted.Add(
+                ai.ID,
+                Mathf.Ceil(__percent.What(
+                    ai.gameObject.GetComponent<RectTransform>().anchoredPosition.x,
+                    TimelineOneTurnWidth
+                ))
+            );
+        });
 
         // __debug.DDictionary<float>(unsorted, "unsorted: ");
 
         var allRectsXP = new Dictionary<int, float>();
-        foreach (KeyValuePair<int, float> author in unsorted.OrderBy(key => key.Value))
+        foreach (KeyValuePair<int, float> indctr in unsorted.OrderBy(key => key.Value))
         {
-            allRectsXP.Add(author.Key, author.Value);
+            allRectsXP.Add(indctr.Key, indctr.Value);
         }
 
-        // __debug.DDictionary<float>(allRectsXP, "allRectsXP: ");
+        __debug.DDictionary<float>(allRectsXP, "allRectsXP: ");
 
         var allPercentages = allRectsXP.Select(pair => pair.Value).Distinct().ToList();
         // __debug.DList<float>(allPercentages, "allPercentages: ");
@@ -417,18 +405,22 @@ public class Timeline : MonoBehaviour
                 // );
 
                 // Solve concurency issue
-                var isClosestGhost = closest.Key > 1000;
-                var closestIndicator = isClosestGhost
-                    ? TimelineIndicators.Find(ti => ti.GhostID == closest.Key)
-                    : TimelineIndicators.Find(ti => ti.Unit.ID == closest.Key);
+                var indicator = TimelineUtils.SolveClosestIndicator(
+                    TimelineIndicators,
+                    closest, farthest
+                );
+                // var isClosestGhost = closest.Key > GHOSTINDICATOR_ID_THRESHOLD;
+                // var closestIndicator = isClosestGhost
+                //     ? TimelineIndicators.Find(ti => ti.GhostID == closest.Key)
+                //     : TimelineIndicators.Find(ti => ti.Unit.ID == closest.Key);
 
-                var isFarthestGhost = farthest.Key > 1000;
-                var farthestIndicator = isFarthestGhost
-                    ? TimelineIndicators.Find(ti => ti.GhostID == farthest.Key)
-                    : TimelineIndicators.Find(ti => ti.Unit.ID == farthest.Key);
+                // var isFarthestGhost = farthest.Key > GHOSTINDICATOR_ID_THRESHOLD;
+                // var farthestIndicator = isFarthestGhost
+                //     ? TimelineIndicators.Find(ti => ti.GhostID == farthest.Key)
+                //     : TimelineIndicators.Find(ti => ti.Unit.ID == farthest.Key);
 
-                var indicator = closestIndicator.Unit.Haste >= farthestIndicator.Unit.Haste
-                    ? closestIndicator : farthestIndicator;
+                // var indicator = closestIndicator.Unit.Haste >= farthestIndicator.Unit.Haste
+                //     ? closestIndicator : farthestIndicator;
 
                 var currentPercentageOfIndicator = allRectsXP[indicator.Unit.ID];
                 var pIndex = allPercentages.FindIndex(ap => ap == currentPercentageOfIndicator);

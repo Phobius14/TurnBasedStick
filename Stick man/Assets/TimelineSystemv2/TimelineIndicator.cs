@@ -41,11 +41,15 @@ public class TimelineIndicator : MonoBehaviour
         UnitId: {0},
         TurnWidth: {1},
         Level: {2},
-        PercentTurn: {3}",
+        PercentTurn: {3}
+        GhostID: {4},
+        AttackID: {5}",
         Unit.ID,
         TurnWidth,
         Level,
-        PercentTurn
+        PercentTurn,
+        GhostID,
+        AttackID
         );
     }
 }
