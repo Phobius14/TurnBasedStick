@@ -48,13 +48,42 @@ public class UnitPlayer : MonoBehaviour, IUnitControlable
             ? (Main._.Game as TheGame).Team2
             : (Main._.Game as TheGame).Team1;
 
-        int randomEnemyIndex = UnityEngine.Random.Range(0, thisUnitEnemies.Count);
+        foreach (var u in thisUnitEnemies)
+        {
+            u.ActivatePickButton(onPickedEnemy);
+        }
+    }
 
-        _unit.TargetEnemy = thisUnitEnemies[randomEnemyIndex];
+    private void onPickedEnemy(Unit unit)
+    {
+        _unit.TargetEnemy = unit;
+
+        var thisUnitEnemies = _unit.Team == 1
+            ? (Main._.Game as TheGame).Team2
+            : (Main._.Game as TheGame).Team1;
+
+        foreach (var u in thisUnitEnemies)
+        {
+            u.HidePickButton();
+        }
+
+        mergeMapEndingTurn();
     }
 
     private void afterAttacking(int actionId)
     {
-        _endTurnCallback(actionId);
+        _pickedActionId = actionId;
+        mergeMapEndingTurn();
+    }
+
+    private int _pickedActionId;
+    private int mergeMap = 0;
+    private void mergeMapEndingTurn()
+    {
+        mergeMap++;
+        if (mergeMap < 2) { return; }
+
+        mergeMap = 0;
+        _endTurnCallback(_pickedActionId);
     }
 }

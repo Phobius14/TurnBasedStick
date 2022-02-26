@@ -1,3 +1,4 @@
+using System;
 using Assets.HeadStart.Core;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ public class Unit : MonoBehaviour
     public string Name;
     public Transform HealthBarT;
     public Transform AttackPointT;
+    public PickButton PickButton;
     internal int Team;
     internal bool AI;
     internal int ID;
@@ -19,6 +21,7 @@ public class Unit : MonoBehaviour
     private float _currentHealth;
     private Vector3 _originalPos;
     private int? _moveToAttackTwId;
+    private Action<Unit> _onPickedEnemy;
 
     public virtual void Init(int unitId, int team, bool ai)
     {
@@ -40,6 +43,17 @@ public class Unit : MonoBehaviour
         ScreenData.InitDependency(_healthBarSetting);
 
         ScreenData.Register(ref PointsObservedValues);
+
+        if (PickButton != null)
+        {
+            PickButton.Init(() =>
+            {
+                if (_onPickedEnemy == null) { return; }
+
+                _onPickedEnemy(this);
+            });
+            HidePickButton();
+        }
     }
 
     public virtual void Attack1(CoreIdCallback afterAttack)
@@ -64,6 +78,17 @@ public class Unit : MonoBehaviour
     public virtual void SetupDelayedAttack(int actionId, CoreIdCallback afterAttack = null)
     {
 
+    }
+
+    internal void ActivatePickButton(Action<Unit> onPickedEnemy)
+    {
+        _onPickedEnemy = onPickedEnemy;
+        PickButton.gameObject.SetActive(true);
+    }
+
+    internal void HidePickButton()
+    {
+        PickButton.gameObject.SetActive(false);
     }
 
     public virtual void MoveToAttack()

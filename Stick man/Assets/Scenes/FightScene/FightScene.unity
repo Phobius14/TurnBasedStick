@@ -272,9 +272,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Player: {fileID: 0}
   TimelineRef: {fileID: 6}
-  AutoTimeDelay: 0.3
+  AutoTimeDelay: 0.05
   StopTurns: 0
-  Team1AI: 0
+  Team1AI: 1
   Team1:
   - {fileID: 1608328786}
   Team2AI: 1
