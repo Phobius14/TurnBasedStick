@@ -18,6 +18,8 @@ public class UnitPlayer : MonoBehaviour, IUnitControlable
             _unit = gameObject.GetComponent<Unit>();
         }
 
+        pickSomeoneFromTheEnemyTeam();
+
         TurnGameView._.ActivateActions(
             _duringDecisionCallback,
             (int actionId) =>
@@ -38,6 +40,17 @@ public class UnitPlayer : MonoBehaviour, IUnitControlable
                 }
             }
         );
+    }
+
+    private void pickSomeoneFromTheEnemyTeam()
+    {
+        var thisUnitEnemies = _unit.Team == 1
+            ? (Main._.Game as TheGame).Team2
+            : (Main._.Game as TheGame).Team1;
+
+        int randomEnemyIndex = UnityEngine.Random.Range(0, thisUnitEnemies.Count);
+
+        _unit.TargetEnemy = thisUnitEnemies[randomEnemyIndex];
     }
 
     private void afterAttacking(int actionId)

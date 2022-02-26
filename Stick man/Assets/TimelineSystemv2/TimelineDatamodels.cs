@@ -10,7 +10,7 @@ public enum INDICATOR_TYPE
 
 public interface ITimelineIndicator
 {
-    INDICATOR_TYPE Type { get; }
+    INDICATOR_TYPE Type { get; set; }
     Unit Unit { get; set; }
     int Level { get; set; }
     RectTransform Rt { get; set; }

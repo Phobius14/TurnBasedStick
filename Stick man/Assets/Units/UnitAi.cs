@@ -17,10 +17,9 @@ public class UnitAi : MonoBehaviour, IUnitControlable
             _unit = gameObject.GetComponent<Unit>();
         }
 
-        int action = UnityEngine.Random.Range(0, 3);
+        pickSomeoneFromTheEnemyTeam();
 
-        // TODO: make AI make a decision
-        // _duringDecisionCallback((int)ATTACK_ACTION.LIGHT);
+        int action = UnityEngine.Random.Range(0, 3);
 
         __.Time.RxWait(() =>
         {
@@ -37,5 +36,17 @@ public class UnitAi : MonoBehaviour, IUnitControlable
         }, Timeline.MOVE_INDICATORS_TIME);
 
 
+    }
+
+    private void pickSomeoneFromTheEnemyTeam()
+    {
+        Debug.Log("_unit.Team: " + _unit.Team);
+        var thisUnitEnemies = _unit.Team == 1
+            ? (Main._.Game as TheGame).Team2
+            : (Main._.Game as TheGame).Team1;
+
+        int randomEnemyIndex = UnityEngine.Random.Range(0, thisUnitEnemies.Count);
+
+        _unit.TargetEnemy = thisUnitEnemies[randomEnemyIndex];
     }
 }

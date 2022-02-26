@@ -266,6 +266,11 @@ public class Timeline : MonoBehaviour
         // ai.Level = actionLevel;
     }
 
+    public void SetCurrentIndicatorType(INDICATOR_TYPE type)
+    {
+        _currentTimelineIndicator.Type = type;
+    }
+
     public void ResetTimeline()
     {
         _distanceToFirst = null;
@@ -492,10 +497,10 @@ public class Timeline : MonoBehaviour
     {
         var duplicatePercentages = new List<OverlappingPercentage>();
 
-        var highestHaste = UnitIndicators.Max(ti => ti.Unit.Haste);
+        var highestHaste = UnitIndicators.Max(ti => ti.Unit.UnitSettings.Haste);
         foreach (var indicator in UnitIndicators)
         {
-            var percentHaste = __percent.What(indicator.Unit.Haste, highestHaste);
+            var percentHaste = __percent.What(indicator.Unit.UnitSettings.Haste, highestHaste);
             indicator.PercentTurn = percentHaste;
         }
         // __debug.DebugList<TimelineIndicator>(TimelineIndicators, "TimelineIndicators: ");

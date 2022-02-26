@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using Assets.HeadStart.CoreUi;
 
 namespace Assets.HeadStart.Core
 {
-    public class CoreObservedValues
+    public class CoreObservedValues : CoreUiObservedValue
     {
 #pragma warning disable 0414 // private field assigned but not used.
         public static readonly string _version = "2.0.8";

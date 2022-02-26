@@ -9,7 +9,7 @@ public class UnitIndicator : MonoBehaviour, ITimelineIndicator
     public RectTransform AttackIndicator;
     [Header("Props")]
     public float PercentTurn;
-    public INDICATOR_TYPE Type { get { return INDICATOR_TYPE.UNIT; } }
+    public INDICATOR_TYPE Type { get; set; }
     public Unit Unit { get; set; }
     public int Level { get; set; }
     public float TurnWidth { get; set; }

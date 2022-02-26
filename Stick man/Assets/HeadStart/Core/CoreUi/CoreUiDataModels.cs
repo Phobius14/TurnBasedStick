@@ -1,3 +1,5 @@
+using Assets.HeadStart.Core;
+
 namespace Assets.HeadStart.CoreUi
 {
     public enum UiDependency
@@ -9,6 +11,7 @@ namespace Assets.HeadStart.CoreUi
     {
         void InitDependency(object obj);
         void ListenForChanges(CoreUiObservedValue obj);
+        void ListenForChanges(ref CoreObservedValues obj);
         void UnregisterOnDestroy();
     }
 

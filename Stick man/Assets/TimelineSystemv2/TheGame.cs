@@ -32,10 +32,8 @@ public class TheGame : GameBase
         int unitId = teamId * 100;
         foreach (Unit u in team)
         {
-            u.ID = unitId;
-            u.gameObject.name = "(" + u.ID + ") " + u.Name;
-            u.Team = 1;
-            u.AI = ai;
+            u.Init(unitId, teamId, ai);
+
             if (u.AI)
             {
                 u.gameObject.AddComponent<UnitAi>();
@@ -55,6 +53,7 @@ public class TheGame : GameBase
         TimelineRef.DragAllCloserToTurn((object obj) =>
         {
             var ti = (obj as ITimelineIndicator);
+            Debug.Log("ti.Type: " + ti.Type);
 
             if (ti.Type == INDICATOR_TYPE.ATTACK)
             {
@@ -63,6 +62,7 @@ public class TheGame : GameBase
                     mergeMapEndingTurn();
                 });
                 TimelineRef.DoDelayedAttack(ti, mergeMapEndingTurn);
+                ti.Type = INDICATOR_TYPE.UNIT;
                 return;
             }
 
@@ -84,12 +84,12 @@ public class TheGame : GameBase
     private void duringDecision(int actionId)
     {
         TimelineRef.ShowDelayedAttack((ATTACK_ACTION)actionId);
-        Debug.Log("------[" + actionId + "]------duringTurnAnimation()");
+        // Debug.Log("------[" + actionId + "]------duringTurnAnimation()");
     }
 
     private void endTurn(int actionId)
     {
-        Debug.Log("---------[" + actionId + "]----------End Turn");
+        // Debug.Log("---------[" + actionId + "]----------End Turn");
 
         TimelineRef.SetLevelToCurrent(actionId + 1);
 
@@ -99,6 +99,7 @@ public class TheGame : GameBase
             // TODO: to think about making space for attack
             // - there is space in the first row, so we can drag all to where it meets attackIndctr
             // - and push all after
+            TimelineRef.SetCurrentIndicatorType(INDICATOR_TYPE.ATTACK);
             TimelineRef.ResetTimeline();
             bool indicatorsOverlap = TimelineRef.CheckIfIndicatorsOverlap(endingTurn);
             if (indicatorsOverlap == false)
@@ -108,6 +109,7 @@ public class TheGame : GameBase
             return;
         }
 
+        TimelineRef.SetCurrentIndicatorType(INDICATOR_TYPE.UNIT);
         TimelineRef.MoveCurrentIndicatorToHisNextTurn(endingTurn);
     }
 
@@ -124,7 +126,7 @@ public class TheGame : GameBase
     private void endingTurn()
     {
         NextTurn();
-        Debug.Log("Hit <b>A</b> to move NextTurn()");
+        // Debug.Log("Hit <b>A</b> to move NextTurn()");
     }
 
     void Update()

@@ -12,8 +12,10 @@ public class TestEnemy : Unit
     //
     private readonly float ATTACK_1_TIME = 0.5f;
 
-    void Start()
+    public override void Init(int unitId, int team, bool ai)
     {
+        base.Init(unitId, team, ai);
+
         AttackText.gameObject.SetActive(false);
     }
 
@@ -36,6 +38,8 @@ public class TestEnemy : Unit
         LeanTween.descr(twId).setEase(LeanTweenType.easeOutQuart);
         LeanTween.descr(twId).setOnComplete(() =>
         {
+            DamageTargetEnemy(0);
+
             var twId = LeanTween.scale(
                 AttackText.gameObject,
                 _initialScale,
@@ -69,6 +73,8 @@ public class TestEnemy : Unit
         LeanTween.descr(twId).setEase(LeanTweenType.easeOutQuart);
         LeanTween.descr(twId).setOnComplete(() =>
         {
+            DamageTargetEnemy(1);
+
             var twId = LeanTween.scale(
                 AttackText.gameObject,
                 _initialScale,
@@ -102,6 +108,8 @@ public class TestEnemy : Unit
         LeanTween.descr(twId).setEase(LeanTweenType.easeOutQuart);
         LeanTween.descr(twId).setOnComplete(() =>
         {
+            DamageTargetEnemy(2);
+
             var twId = LeanTween.scale(
                 AttackText.gameObject,
                 _initialScale,
@@ -114,6 +122,11 @@ public class TestEnemy : Unit
                 _afterAttack((int)ATTACK_ACTION.HARD);
             });
         });
+    }
+
+    public override void DamageTargetEnemy(int multiply)
+    {
+        base.DamageTargetEnemy(multiply);
     }
 
     public override void DelayedAttack(int actionId, CoreIdCallback afterAttack = null)

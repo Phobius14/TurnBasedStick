@@ -38,8 +38,8 @@ public static class TimelineUtils
         KeyValuePair<int, float> closest, KeyValuePair<int, float> farthest
     )
     {
-        Debug.Log("closest: " + closest);
-        Debug.Log("farthest: " + farthest);
+        // Debug.Log("closest: " + closest);
+        // Debug.Log("farthest: " + farthest);
 
         var isClosestGhost = closest.Key > Timeline.GHOSTINDICATOR_ID_THRESHOLD;
 
@@ -56,11 +56,11 @@ public static class TimelineUtils
             return ti.Unit.ID == farthest.Key;
         });
 
-        Debug.Log("closestIndicator: " + closestIndicator);
-        Debug.Log("farthestIndicator: " + farthestIndicator);
+        // Debug.Log("closestIndicator: " + closestIndicator);
+        // Debug.Log("farthestIndicator: " + farthestIndicator);
 
         ITimelineIndicator indicator;
-        if (closestIndicator.Unit.Haste >= farthestIndicator.Unit.Haste)
+        if (closestIndicator.Unit.UnitSettings.Haste >= farthestIndicator.Unit.UnitSettings.Haste)
         {
             indicator = closestIndicator;
         }
