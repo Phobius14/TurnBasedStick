@@ -1,4 +1,3 @@
-using System;
 using Assets.HeadStart.Core;
 using UnityEngine;
 
@@ -53,7 +52,12 @@ public class Unit : MonoBehaviour
     {
     }
 
-    public virtual void DelayedAttack(int actionId, CoreIdCallback afterAttack = null)
+    public virtual void DoDelayedAttack(int actionId, CoreIdCallback afterAttack = null)
+    {
+
+    }
+
+    public virtual void SetupDelayedAttack(int actionId, CoreIdCallback afterAttack = null)
     {
 
     }
@@ -69,6 +73,24 @@ public class Unit : MonoBehaviour
     internal void TakeDamage(float damage)
     {
         _currentHealth -= damage;
+
+        if (_currentHealth <= 0)
+        {
+            __.Time.RxWait(() =>
+            {
+                Debug.Log(
+                    "<b>" + gameObject.name + "</b> " +
+                    "Died (took " + damage + " damage)"
+                );
+                HealthChange hpChange = new HealthChange()
+                {
+                    UnitID = ID,
+                    Kill = true
+                };
+                PointsObservedValues.SetValue(ScreenHealth.HEALTH_CHANGE, hpChange);
+                (Main._.Game as TheGame).OnUnitDeath(this);
+            }, 0.01f);
+        }
 
         HealthChange hpChange = new HealthChange()
         {

@@ -51,4 +51,9 @@ public class HealthBar : MonoBehaviour
         //now you can set the position of the ui element
         _rt.anchoredPosition = _screenPos;
     }
+
+    internal void Kill()
+    {
+        Destroy(gameObject);
+    }
 }

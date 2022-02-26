@@ -27,6 +27,7 @@ public class HealthChange
     public int Shield;
     public int Dmg;
     public int CalculatedHp;
+    public bool Kill;
 
     public override string ToString()
     {

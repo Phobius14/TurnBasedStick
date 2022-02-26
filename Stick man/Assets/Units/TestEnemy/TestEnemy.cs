@@ -23,103 +23,57 @@ public class TestEnemy : Unit
     {
         _afterAttack = afterAttack;
 
-        AttackText.gameObject.SetActive(true);
-
-        Debug.Log("<b>TestEnemy</b> -> <b>Attack 1</b> !!");
-
-        _initialScale = AttackText.transform.localScale;
-        var toScale = _initialScale * 2;
-        var twId = LeanTween.scale(
-            AttackText.gameObject,
-            toScale,
-            ATTACK_1_TIME / 2
-        ).id;
-
-        LeanTween.descr(twId).setEase(LeanTweenType.easeOutQuart);
-        LeanTween.descr(twId).setOnComplete(() =>
-        {
-            DamageTargetEnemy(0);
-
-            var twId = LeanTween.scale(
-                AttackText.gameObject,
-                _initialScale,
-                ATTACK_1_TIME / 2
-            ).id;
-            LeanTween.descr(twId).setOnComplete(() =>
-            {
-                AttackText.gameObject.SetActive(false);
-
-                _afterAttack((int)ATTACK_ACTION.LIGHT);
-            });
-        });
+        defaultAttack(0);
     }
 
-    public override void Attack2(CoreIdCallback afterAttack)
+    public override void Attack2(CoreIdCallback afterAttack = null)
     {
         _afterAttack = afterAttack;
 
-        AttackText.gameObject.SetActive(true);
-
-        Debug.Log("<b>TestEnemy</b> -> <b>Attack 2</b> !!");
-
-        _initialScale = AttackText.transform.localScale;
-        var toScale = _initialScale * 2;
-        var twId = LeanTween.scale(
-            AttackText.gameObject,
-            toScale,
-            ATTACK_1_TIME / 1.5f
-        ).id;
-
-        LeanTween.descr(twId).setEase(LeanTweenType.easeOutQuart);
-        LeanTween.descr(twId).setOnComplete(() =>
-        {
-            DamageTargetEnemy(1);
-
-            var twId = LeanTween.scale(
-                AttackText.gameObject,
-                _initialScale,
-                ATTACK_1_TIME / 1.5f
-            ).id;
-            LeanTween.descr(twId).setOnComplete(() =>
-            {
-                AttackText.gameObject.SetActive(false);
-
-                _afterAttack((int)ATTACK_ACTION.MEDIUM);
-            });
-        });
+        defaultAttack(1);
     }
 
-    public override void Attack3(CoreIdCallback afterAttack)
+    public override void Attack3(CoreIdCallback afterAttack = null)
     {
         _afterAttack = afterAttack;
 
+        defaultAttack(2);
+    }
+
+    private void defaultAttack(int attackType)
+    {
         AttackText.gameObject.SetActive(true);
 
-        Debug.Log("<b>TestEnemy</b> -> <b>Attack 3</b> !!");
+        Debug.Log(
+            "<b>" + gameObject.name + "</b>" +
+            " -> Attack " + (attackType + 1) + " -> " +
+            "<b>" + TargetEnemy.gameObject.name + "</b>"
+        );
 
         _initialScale = AttackText.transform.localScale;
         var toScale = _initialScale * 2;
         var twId = LeanTween.scale(
             AttackText.gameObject,
             toScale,
-            ATTACK_1_TIME / 1.33f
+            ATTACK_1_TIME * TheGame.TIME_m
         ).id;
 
         LeanTween.descr(twId).setEase(LeanTweenType.easeOutQuart);
         LeanTween.descr(twId).setOnComplete(() =>
         {
-            DamageTargetEnemy(2);
+            DamageTargetEnemy(attackType);
 
             var twId = LeanTween.scale(
                 AttackText.gameObject,
                 _initialScale,
-                ATTACK_1_TIME / 1.33f
+                ATTACK_1_TIME * TheGame.TIME_m
             ).id;
             LeanTween.descr(twId).setOnComplete(() =>
             {
                 AttackText.gameObject.SetActive(false);
 
-                _afterAttack((int)ATTACK_ACTION.HARD);
+                if (_afterAttack == null) { return; }
+                _afterAttack(attackType);
             });
         });
     }
@@ -129,19 +83,23 @@ public class TestEnemy : Unit
         base.DamageTargetEnemy(multiply);
     }
 
-    public override void DelayedAttack(int actionId, CoreIdCallback afterAttack = null)
+    public override void DoDelayedAttack(int actionId, CoreIdCallback afterAttack = null)
     {
-        if (actionId == 1)
-        {
-            Attack1(afterAttack);
-        }
-        else if (actionId == 2)
+        if (actionId == 2)
         {
             Attack2(afterAttack);
         }
-        else
+        else if (actionId == 3)
         {
             Attack3(afterAttack);
+        }
+    }
+
+    public override void SetupDelayedAttack(int actionId, CoreIdCallback afterAttack = null)
+    {
+        if (actionId >= 2)
+        {
+            afterAttack(actionId - 1);
         }
     }
 }

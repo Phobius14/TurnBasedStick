@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b37dfd40f1249924e95b3bdb6aa50cf6, type: 3}
   m_Name: EnemySettings
   m_EditorClassIdentifier: 
-  MaxHealth: 600
-  AttackDamage: 75
+  MaxHealth: 180
+  AttackDamage: 32
   AttackMultiplier: 1.5
   Haste: 80
   TimelineIndicator: {fileID: 4610051357446208782, guid: 86d3dd4ccc223334f946890138d95bd4, type: 3}

@@ -27,20 +27,23 @@ public class UnitAi : MonoBehaviour, IUnitControlable
 
             __.Time.RxWait(() =>
             {
-                _unit.DelayedAttack(action + 1, (int actionId) =>
+                if (action == 0)
                 {
-                    _endTurnCallback(actionId);
-                });
-            }, Timeline.MOVE_INDICATORS_TIME);
+                    _unit.Attack1(_endTurnCallback);
+                }
+                else
+                {
+                    _unit.SetupDelayedAttack(action + 1, _endTurnCallback);
+                }
+            }, Timeline.MOVE_INDICATORS_TIME * TheGame.TIME_m);
 
-        }, Timeline.MOVE_INDICATORS_TIME);
+        }, Timeline.MOVE_INDICATORS_TIME * TheGame.TIME_m);
 
 
     }
 
     private void pickSomeoneFromTheEnemyTeam()
     {
-        Debug.Log("_unit.Team: " + _unit.Team);
         var thisUnitEnemies = _unit.Team == 1
             ? (Main._.Game as TheGame).Team2
             : (Main._.Game as TheGame).Team1;

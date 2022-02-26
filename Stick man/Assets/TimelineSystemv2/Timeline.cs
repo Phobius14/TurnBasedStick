@@ -71,15 +71,23 @@ public class Timeline : MonoBehaviour
                 indicator.TurnWidth * 2,
                 getLevelYPos(indicator.Level)
             );
-
-            // var aiIndex = AttackIndicators.FindIndex(ai => ai.Unit.ID == indicator.Unit.ID);
-            // var aiRt = AttackIndicators[giIndex].transform as RectTransform;
-            // aiRt.anchoredPosition = new Vector2(0, getLevelYPos(1));
-
-            // AttackIndicators[giIndex].gameObject.SetActive(false);
         }
 
         _valueTweenGo = new GameObject();
+    }
+
+    internal void RemoveIndicator(Unit unit)
+    {
+        int index = UnitIndicators.FindIndex(ui => ui.Unit.ID == unit.ID);
+        UnitIndicators[index].RemoveYourself();
+        Destroy(UnitIndicators[index].gameObject);
+
+        UnitIndicators.RemoveAt(index);
+
+        index = GhostIndicators.FindIndex(gi => gi.UnitID == unit.ID);
+        Destroy(GhostIndicators[index].gameObject);
+
+        GhostIndicators.RemoveAt(index);
     }
 
     public void DragAllCloserToTurn(CoreObjCallback setNextToDoTurn)
@@ -96,7 +104,7 @@ public class Timeline : MonoBehaviour
         _pullAllTwId = LeanTween.value(
             fromPos,
             toPos,
-            MOVE_INDICATORS_TIME
+            MOVE_INDICATORS_TIME * TheGame.TIME_m
         ).id;
 
         LeanTween.descr(_pullAllTwId.Value).setEase(LeanTweenType.easeOutSine);
@@ -174,7 +182,7 @@ public class Timeline : MonoBehaviour
             _valueTweenGo,
             fromPos,
             toPos,
-            MOVE_INDICATORS_TIME
+            MOVE_INDICATORS_TIME * TheGame.TIME_m
         ).id;
         LeanTween.descr(_moveAttackTwId.Value).setEase(LeanTweenType.easeOutSine);
         LeanTween.descr(_moveAttackTwId.Value)
@@ -221,7 +229,7 @@ public class Timeline : MonoBehaviour
         _pushOneTwId = LeanTween.value(
             fromPos,
             toPos,
-            MOVE_INDICATORS_TIME
+            MOVE_INDICATORS_TIME * TheGame.TIME_m
         ).id;
         LeanTween.descr(_pushOneTwId.Value).setEase(LeanTweenType.easeOutSine);
         LeanTween.descr(_pushOneTwId.Value)
@@ -262,8 +270,6 @@ public class Timeline : MonoBehaviour
     public void SetLevelToCurrent(int actionLevel)
     {
         _currentTimelineIndicator.Level = actionLevel;
-        // var ai = AttackIndicators.Find(ai => ai.ID == _currentTimelineIndicator.AttackID);
-        // ai.Level = actionLevel;
     }
 
     public void SetCurrentIndicatorType(INDICATOR_TYPE type)
@@ -472,7 +478,7 @@ public class Timeline : MonoBehaviour
         var pushTwId = LeanTween.value(
             fromPos,
             toPos,
-            MOVE_INDICATORS_TIME / 2
+            (MOVE_INDICATORS_TIME / 2) * TheGame.TIME_m
         ).id;
         LeanTween.descr(pushTwId).setEase(LeanTweenType.easeOutSine);
         LeanTween.descr(pushTwId)

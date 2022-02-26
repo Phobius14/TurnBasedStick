@@ -49,6 +49,11 @@ public class UnitIndicator : MonoBehaviour, ITimelineIndicator
         AttackIndicator.gameObject.SetActive(show);
     }
 
+    internal void RemoveYourself()
+    {
+        Unit = null;
+    }
+
     public override string ToString()
     {
         return "\n" + String.Format(@"Unit.ID: {0},

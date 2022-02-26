@@ -50,16 +50,7 @@ public class ScreenDataCanvas : MonoBehaviour, IUiDependency
 
                 if (cv.Contains(ScreenHealth.HEALTH_CHANGE))
                 {
-                    var healthChange = cv.Values[(int)ScreenHealth.HEALTH_CHANGE] as HealthChange;
-                    // Debug.Log("healthChange: " + healthChange);
-
-                    var healthBarSettings = HealthBarSettings
-                        .Find(hbs => hbs.UnitID == healthChange.UnitID);
-                    // Debug.Log("healthBarSettings: " + healthBarSettings);
-
-                    healthBarSettings.HealthBar.CalculateHealthBar(
-                        healthChange, healthBarSettings.MaxHealth
-                    );
+                    handleHealthChange(cv.Values[(int)ScreenHealth.HEALTH_CHANGE] as HealthChange);
                 }
             });
     }
@@ -84,6 +75,27 @@ public class ScreenDataCanvas : MonoBehaviour, IUiDependency
         hpBar.HealthImage.color = hpColor;
         hpBar.Init(hbSetting.Target);
         return hpBar;
+    }
+
+    private void handleHealthChange(HealthChange healthChange)
+    {
+        // Debug.Log("healthChange: " + healthChange);
+
+        var healthBarSettings = HealthBarSettings
+            .Find(hbs => hbs.UnitID == healthChange.UnitID);
+
+        if (healthChange.Kill)
+        {
+            var index = HealthBarSettings.FindIndex(hpb => hpb.UnitID == healthChange.UnitID);
+            HealthBarSettings[index].HealthBar.Kill();
+            HealthBarSettings.RemoveAt(index);
+
+            return;
+        }
+
+        healthBarSettings.HealthBar.CalculateHealthBar(
+            healthChange, healthBarSettings.MaxHealth
+        );
     }
 
     public void UnregisterOnDestroy()

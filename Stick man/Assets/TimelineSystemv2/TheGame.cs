@@ -6,6 +6,8 @@ public class TheGame : GameBase
     [Header("The Game")]
 
     public Timeline TimelineRef;
+    public float AutoTimeDelay;
+    public static float TIME_m = 0;
     public bool StopTurns;
     public bool Team1AI;
     public List<Unit> Team1;
@@ -19,12 +21,49 @@ public class TheGame : GameBase
         TimelineRef.Init(Team1, Team2);
         TurnGameView._.Init();
 
+        TIME_m = AutoTimeDelay;
+
         StartGame();
     }
 
     public override void StartGame()
     {
         NextTurn();
+    }
+
+    public void OnUnitDeath(Unit unit)
+    {
+        int indexInTeam = -1;
+        int unitTeam = unit.Team;
+        if (unitTeam == 1)
+        {
+            indexInTeam = Team1.FindIndex(u => u.ID == unit.ID);
+        }
+        else
+        {
+            indexInTeam = Team2.FindIndex(u => u.ID == unit.ID);
+        }
+
+        TimelineRef.RemoveIndicator(unit);
+
+        Destroy(unit.gameObject);
+
+        if (unitTeam == 1)
+        {
+            Team1.RemoveAt(indexInTeam);
+            if (Team1.Count == 0)
+            {
+                StopTurns = true;
+            }
+        }
+        else
+        {
+            Team2.RemoveAt(indexInTeam);
+            if (Team2.Count == 0)
+            {
+                StopTurns = true;
+            }
+        }
     }
 
     private void initTeam(List<Unit> team, int teamId, bool ai)
@@ -53,11 +92,10 @@ public class TheGame : GameBase
         TimelineRef.DragAllCloserToTurn((object obj) =>
         {
             var ti = (obj as ITimelineIndicator);
-            Debug.Log("ti.Type: " + ti.Type);
 
             if (ti.Type == INDICATOR_TYPE.ATTACK)
             {
-                ti.Unit.DelayedAttack(ti.Level, (int actionId) =>
+                ti.Unit.DoDelayedAttack(ti.Level, (int actionId) =>
                 {
                     mergeMapEndingTurn();
                 });
