@@ -16,5 +16,6 @@ MonoBehaviour:
   AttackDamage: 50
   AttackMultiplier: 2
   Haste: 60
+  IsRange: 1
   TimelineIndicator: {fileID: 5105750632128405281, guid: 0d9992fb7b1c20741a89fa75bc2a3d5b, type: 3}
   GhostIndicator: {fileID: 2127099713921487415, guid: 6dce29727b81daa4ca3c62ffc7504e4f, type: 3}

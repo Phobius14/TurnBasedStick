@@ -201,6 +201,7 @@ Transform:
   m_Children:
   - {fileID: 1471923718}
   - {fileID: 6562396138427825819}
+  - {fileID: 1371721752382341631}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -269,8 +270,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Magician
   HealthBarT: {fileID: 6562396138427825819}
+  AttackPointT: {fileID: 1371721752382341631}
   UnitSettings: {fileID: 11400000, guid: 9dec8ca9192fb704ca34c0ca5517f5ca, type: 2}
   AttackText: {fileID: 1471923718}
+--- !u!1 &5158551169384527832
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1371721752382341631}
+  m_Layer: 0
+  m_Name: AttackPointT
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1371721752382341631
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5158551169384527832}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.09, y: -0.15, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 96127056901448989}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5972342007671032132
 GameObject:
   m_ObjectHideFlags: 0

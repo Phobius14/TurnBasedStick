@@ -43,6 +43,7 @@ public class TestEnemy : Unit
     private void defaultAttack(int attackType)
     {
         AttackText.gameObject.SetActive(true);
+        _attack_duration = ATTACK_1_TIME * TheGame.TIME_m;
 
         Debug.Log(
             "<b>" + gameObject.name + "</b>" +
@@ -50,12 +51,14 @@ public class TestEnemy : Unit
             "<b>" + TargetEnemy.gameObject.name + "</b>"
         );
 
+        MoveToAttack();
+
         _initialScale = AttackText.transform.localScale;
         var toScale = _initialScale * 2;
         var twId = LeanTween.scale(
             AttackText.gameObject,
             toScale,
-            ATTACK_1_TIME * TheGame.TIME_m
+            _attack_duration
         ).id;
 
         LeanTween.descr(twId).setEase(LeanTweenType.easeOutQuart);
@@ -66,7 +69,7 @@ public class TestEnemy : Unit
             var twId = LeanTween.scale(
                 AttackText.gameObject,
                 _initialScale,
-                ATTACK_1_TIME * TheGame.TIME_m
+                _attack_duration
             ).id;
             LeanTween.descr(twId).setOnComplete(() =>
             {

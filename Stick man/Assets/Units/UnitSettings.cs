@@ -8,6 +8,7 @@ public class UnitSettings : ScriptableObject
     public int AttackDamage;
     public float AttackMultiplier;
     public int Haste; // TODO: Need to rethink haste ??
+    public bool IsRange;
     [Header("Prefabs")]
     public GameObject TimelineIndicator;
     public GameObject GhostIndicator;

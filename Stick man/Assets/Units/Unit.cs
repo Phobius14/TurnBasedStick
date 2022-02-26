@@ -5,16 +5,20 @@ public class Unit : MonoBehaviour
 {
     public string Name;
     public Transform HealthBarT;
+    public Transform AttackPointT;
     internal int Team;
     internal bool AI;
     internal int ID;
-    public Unit TargetEnemy;
+    internal Unit TargetEnemy;
     public CoreObservedValues PointsObservedValues = new CoreObservedValues();
     public UnitSettings UnitSettings;
     protected CoreIdCallback _afterAttack;
+    protected float _attack_duration;
     private HealthBarSetting _healthBarSetting;
     private float _maxHealth;
     private float _currentHealth;
+    private Vector3 _originalPos;
+    private int? _moveToAttackTwId;
 
     public virtual void Init(int unitId, int team, bool ai)
     {
@@ -62,11 +66,38 @@ public class Unit : MonoBehaviour
 
     }
 
+    public virtual void MoveToAttack()
+    {
+        if (UnitSettings.IsRange)
+        {
+            return;
+        }
+
+        _originalPos = transform.position;
+
+        _moveToAttackTwId = LeanTween.move(
+            gameObject,
+            TargetEnemy.AttackPointT.position,
+            _attack_duration
+        ).setEase(LeanTweenType.easeOutExpo).id;
+
+        LeanTween.descr(_moveToAttackTwId.Value)
+            .setOnComplete(() =>
+            {
+                _moveToAttackTwId = _moveToAttackTwId = LeanTween.move(
+                    gameObject,
+                    _originalPos,
+                    _attack_duration
+                ).setEase(LeanTweenType.easeOutExpo).id;
+            });
+    }
+
     public virtual void DamageTargetEnemy(int multiply)
     {
         float multiplier = multiply == 0
             ? 1 : UnitSettings.AttackMultiplier * multiply;
         TargetEnemy.TakeDamage(UnitSettings.AttackDamage * multiplier);
+
         TargetEnemy = null;
     }
 
